@@ -13,3 +13,6 @@ target_compile_options(GettingStarted
   $<$<CXX_COMPILER_ID:GNU>:-pedantic -Wall -Wextra -Werror>
   $<$<CXX_COMPILER_ID:MSVC>:/W4>)
 
+add_custom_command(TARGET GettingStarted POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy GettingStarted
+  ${PROJECT_BINARY_DIR}/bin/Module1/Chapter01/GettingStarted)
