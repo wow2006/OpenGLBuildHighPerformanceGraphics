@@ -33,7 +33,7 @@ struct Common {
 
   // projection and modelview matrices
   glm::mat4 P  = glm::mat4(1);
-  glm::mat4 MV = glm::mat4(1);
+  //glm::mat4 MV = glm::mat4(1);
 
   // camera transformation variables
   int state = 0,  oldX = 0,   oldY   = 0;
@@ -201,7 +201,7 @@ void OnRender() {
   // draw the second submesh
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 
-  g_pCommon->MV = glm::translate(MV, glm::vec3(0, 0, 10));
+  MV = glm::translate(MV, glm::vec3(0, 0, 10));
   glUniformMatrix4fv(g_pCommon->shader("MVP"), 1, GL_FALSE, glm::value_ptr(g_pCommon->P * MV));
   // draw the third submesh
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
@@ -224,7 +224,8 @@ int main(int argc, char **argv) {
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
   glutInitContextVersion(3, 3);
-  glutInitContextFlags(GLUT_CORE_PROFILE | GLUT_DEBUG);
+  glutInitContextProfile(GLUT_CORE_PROFILE | GLUT_DEBUG);
+//glutInitContextFlags();
   glutInitWindowSize(g_pCommon->WIDTH, g_pCommon->HEIGHT);
   glutCreateWindow(
       "Simple plane subdivision using geometry shader - OpenGL 3.3");
