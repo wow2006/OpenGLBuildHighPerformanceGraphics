@@ -2,25 +2,23 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/euler_angles.hpp>
 
-CFreeCamera::CFreeCamera() {
-  translation = glm::vec3(0);
-  speed = 0.5f; // 0.5 m/s
-}
+CFreeCamera::CFreeCamera() : speed{0.5f}, translation{glm::vec3(0)} {}
 
-CFreeCamera::~CFreeCamera(void) {}
+CFreeCamera::~CFreeCamera(void) = default;
 
 void CFreeCamera::Update() {
-  glm::mat4 R = glm::yawPitchRoll(yaw, pitch, roll);
+  const auto R = glm::yawPitchRoll(yaw, pitch, roll);
+
   position += translation;
 
   // set this when no movement decay is needed
   // translation=glm::vec3(0);
 
-  look = glm::vec3(R * glm::vec4(0, 0, 1, 0));
-  up = glm::vec3(R * glm::vec4(0, 1, 0, 0));
+  look  = glm::vec3(R * glm::vec4(0, 0, 1, 0));
+  up    = glm::vec3(R * glm::vec4(0, 1, 0, 0));
   right = glm::cross(look, up);
 
-  glm::vec3 tgt = position + look;
+  const auto tgt = position + look;
   V = glm::lookAt(position, tgt, up);
 }
 

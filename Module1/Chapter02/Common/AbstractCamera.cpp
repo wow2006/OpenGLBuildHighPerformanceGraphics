@@ -1,36 +1,42 @@
 #include "AbstractCamera.hpp"
 
-glm::vec3 CAbstractCamera::UP = glm::vec3(0, 1, 0);
+constexpr glm::vec3 CAbstractCamera::UP;
 
-CAbstractCamera::CAbstractCamera(void) {
-  Znear = 0.1f;
-  Zfar = 1000;
-}
+CAbstractCamera::CAbstractCamera() : Znear{0.1f}, Zfar{1000.f} {}
 
-CAbstractCamera::~CAbstractCamera(void) {}
+CAbstractCamera::~CAbstractCamera() = default;
 
 void CAbstractCamera::SetupProjection(const float fovy, const float aspRatio,
                                       const float nr, const float fr) {
-  P = glm::perspective(fovy, aspRatio, nr, fr);
-  Znear = nr;
-  Zfar = fr;
-  fov = fovy;
+  P            = glm::perspective(fovy, aspRatio, nr, fr);
+  Znear        = nr;
+  Zfar         = fr;
+  fov          = fovy;
   aspect_ratio = aspRatio;
+}
+
+void CAbstractCamera::Rotate(const float y, const float p, const float r) {
+  yaw = glm::radians(y);
+  pitch = glm::radians(p);
+  roll = glm::radians(r);
+  Update();
 }
 
 const glm::mat4 CAbstractCamera::GetViewMatrix() const { return V; }
 
 const glm::mat4 CAbstractCamera::GetProjectionMatrix() const { return P; }
 
-const glm::vec3 CAbstractCamera::GetPosition() const { return position; }
-
 void CAbstractCamera::SetPosition(const glm::vec3 &p) { position = p; }
 
-float CAbstractCamera::GetFOV() const { return fov; }
+const glm::vec3 CAbstractCamera::GetPosition() const { return position; }
+
 void CAbstractCamera::SetFOV(const float fovInDegrees) {
   fov = fovInDegrees;
   P = glm::perspective(fovInDegrees, aspect_ratio, Znear, Zfar);
 }
+
+float CAbstractCamera::GetFOV() const { return fov; }
+
 float CAbstractCamera::GetAspectRatio() const { return aspect_ratio; }
 
 void CAbstractCamera::CalcFrustumPlanes() {
@@ -65,28 +71,30 @@ void CAbstractCamera::CalcFrustumPlanes() {
 }
 
 bool CAbstractCamera::IsPointInFrustum(const glm::vec3 &point) {
-  for (int i = 0; i < 6; i++) {
-    if (planes[i].GetDistance(point) < 0)
+  for (auto& plane : planes) {
+    if (plane.GetDistance(point) < 0) {
       return false;
+    }
   }
   return true;
 }
 
 bool CAbstractCamera::IsSphereInFrustum(const glm::vec3 &center,
                                         const float radius) {
-  for (int i = 0; i < 6; i++) {
-    float d = planes[i].GetDistance(center);
-    if (d < -radius)
+  for (auto& plane : planes) {
+    float d = plane.GetDistance(center);
+    if (d < -radius) {
       return false;
+    }
   }
   return true;
 }
 
 bool CAbstractCamera::IsBoxInFrustum(const glm::vec3 &min,
                                      const glm::vec3 &max) {
-  for (int i = 0; i < 6; i++) {
+  for (auto& plane : planes) {
     glm::vec3 p = min, n = max;
-    glm::vec3 N = planes[i].N;
+    glm::vec3 N = plane.N;
     if (N.x >= 0) {
       p.x = max.x;
       n.x = min.x;
@@ -100,7 +108,7 @@ bool CAbstractCamera::IsBoxInFrustum(const glm::vec3 &min,
       n.z = min.z;
     }
 
-    if (planes[i].GetDistance(p) < 0) {
+    if (plane.GetDistance(p) < 0) {
       return false;
     }
   }
@@ -108,13 +116,9 @@ bool CAbstractCamera::IsBoxInFrustum(const glm::vec3 &min,
 }
 
 void CAbstractCamera::GetFrustumPlanes(glm::vec4 fp[6]) {
-  for (int i = 0; i < 6; i++)
-    fp[i] = glm::vec4(planes[i].N, planes[i].d);
+  int i = 0;
+  for (auto& plane : planes) {
+    fp[i++] = glm::vec4(plane.N, plane.d);
+  }
 }
 
-void CAbstractCamera::Rotate(const float y, const float p, const float r) {
-  yaw = glm::radians(y);
-  pitch = glm::radians(p);
-  roll = glm::radians(r);
-  Update();
-}
