@@ -1,3 +1,5 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "AbstractCamera.hpp"
 
 constexpr glm::vec3 CAbstractCamera::UP;
@@ -16,9 +18,9 @@ void CAbstractCamera::SetupProjection(const float fovy, const float aspRatio,
 }
 
 void CAbstractCamera::Rotate(const float y, const float p, const float r) {
-  yaw = glm::radians(y);
+  yaw   = glm::radians(y);
   pitch = glm::radians(p);
-  roll = glm::radians(r);
+  roll  = glm::radians(r);
   Update();
 }
 

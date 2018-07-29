@@ -1,3 +1,5 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <sstream>
 #include <iostream>
 
@@ -20,9 +22,10 @@ struct Common {
   static constexpr int HEIGHT = 960;
 
   //camera tranformation variables
-  int state = 0, oldX=0, oldY=0;
-  float rX=0, rY=0, dist = 10;
-
+  int state = 0;
+  int oldX = 0, oldY = 0;
+  float rX = 0, rY = 0;
+  float dist = 10;
 
   //delta time
   float dt = 0;
@@ -59,28 +62,27 @@ struct Common {
 };
 static Common *g_pCommon = nullptr;
 
-
 //mouse move filtering function
 void filterMouseMoves(float dx, float dy) {
     for (int i = Common::MOUSE_HISTORY_BUFFER_SIZE - 1; i > 0; --i) {
-        g_pCommon->mouseHistory[i] = g_pCommon->mouseHistory[i - 1];
+      g_pCommon->mouseHistory[i] = g_pCommon->mouseHistory[i - 1];
     }
 
     // Store current mouse entry at front of array.
     g_pCommon->mouseHistory[0] = glm::vec2(dx, dy);
 
-    float averageX = 0.0f;
-    float averageY = 0.0f;
-    float averageTotal = 0.0f;
+    float averageX      = 0.0f;
+    float averageY      = 0.0f;
+    float averageTotal  = 0.0f;
     float currentWeight = 1.0f;
 
     // Filter the mouse.
     for (int i = 0; i < Common::MOUSE_HISTORY_BUFFER_SIZE; ++i) {
-		glm::vec2 tmp = g_pCommon->mouseHistory[i];
-        averageX += tmp.x * currentWeight;
-        averageY += tmp.y * currentWeight;
-        averageTotal += 1.0f * currentWeight;
-        currentWeight *= Common::MOUSE_FILTER_WEIGHT;
+      const auto tmp = g_pCommon->mouseHistory[i];
+      averageX      += tmp.x * currentWeight;
+      averageY      += tmp.y * currentWeight;
+      averageTotal  += 1.0f * currentWeight;
+      currentWeight *= Common::MOUSE_FILTER_WEIGHT;
     }
 
     g_pCommon->mouseX = averageX / averageTotal;
@@ -89,47 +91,51 @@ void filterMouseMoves(float dx, float dy) {
 
 //mouse click handler
 void OnMouseDown(int button, int s, int x, int y) {
-	if (s == GLUT_DOWN)
-	{
+	if (s == GLUT_DOWN) {
 		g_pCommon->oldX = x;
 		g_pCommon->oldY = y;
 	}
 
-	if(button == GLUT_MIDDLE_BUTTON)
+	if(button == GLUT_MIDDLE_BUTTON) {
 		g_pCommon->state = 0;
-	else if(button == GLUT_RIGHT_BUTTON)
+  } else if(button == GLUT_RIGHT_BUTTON) {
 		g_pCommon->state = 2;
-	else
+  } else {
 		g_pCommon->state = 1;
+  }
 }
 
 //mouse move handler
 void OnMouseMove(int x, int y) {
 	if (g_pCommon->state == 0) {
-		g_pCommon->dist = (y - g_pCommon->oldY)/5.0f;
+		g_pCommon->dist = (y - g_pCommon->oldY) / 5.0f;
 		g_pCommon->cam.Zoom(g_pCommon->dist);
-	} else if(g_pCommon->state ==2) {
-		float dy = float(y-g_pCommon->oldY)/100.0f;
-		float dx = float(g_pCommon->oldX-x)/100.0f;
-		if(g_pCommon->useFiltering)
+	} else if(g_pCommon->state == 2) {
+		const float dy = (y - g_pCommon->oldY) / 100.0f;
+		const float dx = (g_pCommon->oldX - x) / 100.0f;
+
+		if(g_pCommon->useFiltering) {
 			filterMouseMoves(dx, dy);
-		else {
+    } else {
 			g_pCommon->mouseX = dx;
 			g_pCommon->mouseY = dy;
 		}
 
 		g_pCommon->cam.Pan(g_pCommon->mouseX, g_pCommon->mouseY);
 	} else {
-		g_pCommon->rY += (y - g_pCommon->oldY)/5.0f;
-		g_pCommon->rX += (g_pCommon->oldX-x)/5.0f;
-		if(g_pCommon->useFiltering)
+		g_pCommon->rY += (y - g_pCommon->oldY) / 5.0f;
+		g_pCommon->rX += (g_pCommon->oldX - x) / 5.0f;
+
+		if(g_pCommon->useFiltering) {
 			filterMouseMoves(g_pCommon->rX, g_pCommon->rY);
-		else {
+    } else {
 			g_pCommon->mouseX = g_pCommon->rX;
 			g_pCommon->mouseY = g_pCommon->rY;
 		}
+
 		g_pCommon->cam.Rotate(g_pCommon->mouseX, g_pCommon->mouseY, 0);
 	}
+
 	g_pCommon->oldX = x;
 	g_pCommon->oldY = y;
 
@@ -153,7 +159,7 @@ void OnInit() {
 	glBindTexture(GL_TEXTURE_2D, g_pCommon->checkerTextureID);
 	//set texture parameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
@@ -169,7 +175,8 @@ void OnInit() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 4);
 
 	//allocate texture object
-	glTexImage2D(GL_TEXTURE_2D,0,GL_RED, 128, 128, 0, GL_RED, GL_UNSIGNED_BYTE, data);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 128, 128, 0,
+               GL_RED, GL_UNSIGNED_BYTE, data);
 
 	//generate mipmaps
 	glGenerateMipmap(GL_TEXTURE_2D);
@@ -182,19 +189,22 @@ void OnInit() {
 	GL_CHECK_ERRORS
 		
 	//setup the camera position and target
-	g_pCommon->cam.SetPosition(glm::vec3(5,5,5));
-	g_pCommon->cam.SetTarget(glm::vec3(0,0,0));
+	g_pCommon->cam.SetPosition(glm::vec3(5, 5, 5));
+	g_pCommon->cam.SetTarget(glm::vec3(0, 0, 0));
 
 	//also rotate the camera for proper orientation
-	glm::vec3 look =  glm::normalize(g_pCommon->cam.GetTarget() - g_pCommon->cam.GetPosition());
+	const auto look   = glm::normalize(g_pCommon->cam.GetTarget() -
+                                     g_pCommon->cam.GetPosition());
 
-	float yaw = glm::degrees(float(std::atan2(look.z, look.x) + static_cast<float>(M_PI)));
-	float pitch = glm::degrees(std::asin(look.y));
+	const float yaw   = glm::degrees(std::atan2(look.z, look.x) +
+                                   static_cast<float>(M_PI));
+	const float pitch = glm::degrees(std::asin(look.y));
+
 	g_pCommon->rX = yaw;
 	g_pCommon->rY = pitch;
 
-	g_pCommon->cam.Rotate(g_pCommon->rX, g_pCommon->rY,0);
-	std::cout<<"Initialization successfull"<<std::endl;
+	g_pCommon->cam.Rotate(g_pCommon->rX, g_pCommon->rY, 0);
+	std::cout << "Initialization successfull" << std::endl;
 }
 
 //delete all allocated resources
@@ -207,7 +217,7 @@ void OnShutdown() {
 //resize event handler
 void OnResize(int w, int h) {
 	//set the viewport
-	glViewport (0, 0, static_cast<GLsizei>(w), static_cast<GLsizei>(h));
+	glViewport(0, 0, static_cast<GLsizei>(w), static_cast<GLsizei>(h));
 	//setup the camera projection matrix
 	g_pCommon->cam.SetupProjection(45, static_cast<GLfloat>(w)/h); 
 }
@@ -302,11 +312,11 @@ int main(int argc, char** argv) {
 	GL_CHECK_ERRORS
 
   // print information on screen
-  std::cout << "\tUsing GLEW " << glewGetString(GLEW_VERSION) << std::endl;
-  std::cout << "\tVendor: " << glGetString(GL_VENDOR) << std::endl;
-  std::cout << "\tRenderer: " << glGetString(GL_RENDERER) << std::endl;
-  std::cout << "\tVersion: " << glGetString(GL_VERSION) << std::endl;
-  std::cout << "\tGLSL: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+  std::cout << "\tUsing GLEW " << glewGetString(GLEW_VERSION)              << std::endl;
+  std::cout << "\tVendor: "    << glGetString(GL_VENDOR)                   << std::endl;
+  std::cout << "\tRenderer: "  << glGetString(GL_RENDERER)                 << std::endl;
+  std::cout << "\tVersion: "   << glGetString(GL_VERSION)                  << std::endl;
+  std::cout << "\tGLSL: "      << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
 	GL_CHECK_ERRORS
 
