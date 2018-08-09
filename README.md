@@ -1,4 +1,4 @@
-# OpenGL - Build High Performance Graphics
+# OpenGL - Build High Performance Graphics [![Build Status](https://travis-ci.org/wow2006/OpenGLBuildHighPerformanceGraphics.svg?branch=master)](https://travis-ci.org/wow2006/OpenGLBuildHighPerformanceGraphics)
 Port OpenGL Build High Performance Graphics to CMake. ([Book link](https://www.amazon.com/OpenGL-Build-high-performance-graphics-ebook/dp/B07124RCBT/ref=sr_1_1?ie=UTF8&qid=1533807476&sr=8-1&keywords=OpenGL+Build+High+Performance+Graphics), [Original Source code](https://github.com/PacktPublishing/OpenGL-Build-High-Performance-Graphics))
 
 This book split to three modules
