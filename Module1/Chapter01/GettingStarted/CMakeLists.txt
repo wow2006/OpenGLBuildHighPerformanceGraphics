@@ -1,7 +1,7 @@
 add_executable(GettingStarted main.cpp)
 target_link_libraries(GettingStarted
   PUBLIC
-  OpenGL::OpenGL
+  OpenGL::GL
   GLUT::GLUT
   GLEW::GLEW)
 target_compile_features(GettingStarted

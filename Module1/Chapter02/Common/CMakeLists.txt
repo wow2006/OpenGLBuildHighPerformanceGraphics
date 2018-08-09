@@ -10,7 +10,7 @@ add_library(Common STATIC
   UnitCube.cpp)
 target_link_libraries(Common
   PUBLIC
-  OpenGL::OpenGL
+  OpenGL::GL
   GLUT::GLUT
   GLEW::GLEW)
 target_include_directories(Common

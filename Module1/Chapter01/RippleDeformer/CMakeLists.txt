@@ -1,7 +1,7 @@
 add_executable(RippleDeformer main.cpp GLSLShader.cpp)
 target_link_libraries(RippleDeformer
   PUBLIC
-  OpenGL::OpenGL
+  OpenGL::GL
   GLUT::GLUT
   GLEW::GLEW)
 target_include_directories(RippleDeformer

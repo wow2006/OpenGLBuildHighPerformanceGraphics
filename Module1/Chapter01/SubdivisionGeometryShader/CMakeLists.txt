@@ -1,7 +1,7 @@
 add_executable(SubdivisionGeometryShader main.cpp GLSLShader.cpp)
 target_link_libraries(SubdivisionGeometryShader
   PUBLIC
-  OpenGL::OpenGL
+  OpenGL::GL
   GLUT::GLUT
   GLEW::GLEW)
 target_include_directories(SubdivisionGeometryShader

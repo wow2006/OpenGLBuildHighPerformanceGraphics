@@ -1,7 +1,7 @@
 add_executable(ImageLoader main.cpp GLSLShader.cpp)
 target_link_libraries(ImageLoader
   PUBLIC
-  OpenGL::OpenGL
+  OpenGL::GL
   GLUT::GLUT
   GLEW::GLEW
   ${SOIL_LIBRARIES})

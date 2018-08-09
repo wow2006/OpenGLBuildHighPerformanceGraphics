@@ -1,7 +1,7 @@
 add_executable(SimpleTriangle main.cpp GLSLShader.cpp)
 target_link_libraries(SimpleTriangle
   PUBLIC
-  OpenGL::OpenGL
+  OpenGL::GL
   GLUT::GLUT
   GLEW::GLEW)
 target_include_directories(SimpleTriangle
