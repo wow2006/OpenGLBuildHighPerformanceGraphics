@@ -5,6 +5,8 @@ compiler:
   - clang
 
 before_script:
+  - sudo apt-get update
+  - sudo apt install mesa-utils freeglut3-dev libglew-dev libglm-dev libsoil-dev -y
   - mkdir build
   - cd build
   - cmake ..
