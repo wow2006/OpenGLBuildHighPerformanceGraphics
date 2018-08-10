@@ -30,14 +30,6 @@ struct Common {
   static constexpr float EPSILON = 0.001f;
   static constexpr float EPSILON2 = EPSILON * EPSILON;
 
-  // virtual key codes
-  //const int VK_W = 0x57;
-  //const int VK_S = 0x53;
-  //const int VK_A = 0x41;
-  //const int VK_D = 0x44;
-  //const int VK_Q = 0x51;
-  //const int VK_Z = 0x5a;
-
   // delta time
   float dt = 0;
 
