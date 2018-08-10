@@ -17,8 +17,6 @@
 
 #define GL_CHECK_ERRORS assert(glGetError() == GL_NO_ERROR);
 
-using namespace std;
-
 struct Common {
   // screen size
   static constexpr int WIDTH  = 1280;
@@ -192,7 +190,7 @@ void OnInit() {
   // rotation
   glm::vec3 look    = glm::normalize(p);
   const float yaw   = glm::degrees(atan2f(look.z, look.x) + static_cast<float>(M_PI));
-  const float pitch = glm::degrees(asin(look.y));
+  const float pitch = glm::degrees(asinf(look.y));
   g_pCommon->rX     = yaw;
   g_pCommon->rY     = pitch;
 
@@ -207,14 +205,14 @@ void OnInit() {
   // enable depth testing
   glEnable(GL_DEPTH_TEST);
 
-  cout << "Initialization successfull" << endl;
+  std::cout << "Initialization successfull" << std::endl;
 }
 
 // release all allocated resources
 void OnShutdown() {
   delete g_pCommon->grid;
   delete g_pCommon->cube;
-  cout << "Shutdown successfull" << endl;
+  std::cout << "Shutdown successfull" << std::endl;
 }
 
 // resize event handler
@@ -330,21 +328,21 @@ int main(int argc, char **argv) {
   glewExperimental = GL_TRUE;
   GLenum err = glewInit();
   if (GLEW_OK != err) {
-    cerr << "Error: " << glewGetErrorString(err) << endl;
+    std::cerr << "Error: " << glewGetErrorString(err) << std::endl;
   } else {
     if (GLEW_VERSION_3_3) {
-      cout << "Driver supports OpenGL 3.3\nDetails:" << endl;
+      std::cout << "Driver supports OpenGL 3.3\nDetails:" << std::endl;
     }
   }
   err = glGetError(); // this is to ignore INVALID ENUM error 1282
   GL_CHECK_ERRORS
 
   // print information on screen
-  cout << "\tUsing GLEW " << glewGetString(GLEW_VERSION)              << endl;
-  cout << "\tVendor: "    << glGetString(GL_VENDOR)                   << endl;
-  cout << "\tRenderer: "  << glGetString(GL_RENDERER)                 << endl;
-  cout << "\tVersion: "   << glGetString(GL_VERSION)                  << endl;
-  cout << "\tGLSL: "      << glGetString(GL_SHADING_LANGUAGE_VERSION) << endl;
+  std::cout << "\tUsing GLEW " << glewGetString(GLEW_VERSION)              << std::endl;
+  std::cout << "\tVendor: "    << glGetString(GL_VENDOR)                   << std::endl;
+  std::cout << "\tRenderer: "  << glGetString(GL_RENDERER)                 << std::endl;
+  std::cout << "\tVersion: "   << glGetString(GL_VERSION)                  << std::endl;
+  std::cout << "\tGLSL: "      << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
   GL_CHECK_ERRORS
 
