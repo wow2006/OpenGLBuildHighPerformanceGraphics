@@ -15,8 +15,8 @@ void RenderableObject::Init() {
 
   // get total vertices and indices
   totalVertices = GetTotalVertices();
-  totalIndices = GetTotalIndices();
-  primType = GetPrimitiveType();
+  totalIndices  = GetTotalIndices();
+  primType      = GetPrimitiveType();
 
   // now allocate buffers
   glBindVertexArray(vaoID);

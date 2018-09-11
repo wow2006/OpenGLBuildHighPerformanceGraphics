@@ -4,6 +4,7 @@ add_library(Common STATIC
   GLSLShader.cpp
   Grid.cpp
   Plane.cpp
+  Skybox.cpp
   RenderableObject.cpp
   TargetCamera.cpp
   TexturedPlane.cpp
