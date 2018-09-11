@@ -5,9 +5,9 @@
 
 class CSkybox : public RenderableObject {
 public:
-  CSkybox(void);
+  CSkybox();
 
-  ~CSkybox(void) override;
+  ~CSkybox() override;
 
   int GetTotalVertices() override;
 

@@ -10,8 +10,8 @@ RenderableObject::~RenderableObject() { Destroy(); }
 void RenderableObject::Init() {
   // setup vao and vbo stuff
   glGenVertexArrays(1, &vaoID);
-  glGenBuffers(1, &vboVerticesID);
-  glGenBuffers(1, &vboIndicesID);
+  glGenBuffers(1,      &vboVerticesID);
+  glGenBuffers(1,      &vboIndicesID);
 
   // get total vertices and indices
   totalVertices = GetTotalVertices();

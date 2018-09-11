@@ -35,14 +35,14 @@ GLenum CSkybox::GetPrimitiveType() { return GL_TRIANGLES; }
 
 void CSkybox::FillVertexBuffer(GLfloat *pBuffer) {
   auto vertices = reinterpret_cast<glm::vec3 *>(pBuffer);
-  vertices[0] = glm::vec3(-0.5f, -0.5f, -0.5f);
-  vertices[1] = glm::vec3(0.5f,  -0.5f, -0.5f);
-  vertices[2] = glm::vec3(0.5f,  0.5f,  -0.5f);
-  vertices[3] = glm::vec3(-0.5f, 0.5f,  -0.5f);
-  vertices[4] = glm::vec3(-0.5f, -0.5f, 0.5f);
-  vertices[5] = glm::vec3(0.5f,  -0.5f, 0.5f);
-  vertices[6] = glm::vec3(0.5f,  0.5f,  0.5f);
-  vertices[7] = glm::vec3(-0.5f, 0.5f,  0.5f);
+  vertices[0]   = glm::vec3(-0.5f, -0.5f, -0.5f);
+  vertices[1]   = glm::vec3(0.5f,  -0.5f, -0.5f);
+  vertices[2]   = glm::vec3(0.5f,  0.5f,  -0.5f);
+  vertices[3]   = glm::vec3(-0.5f, 0.5f,  -0.5f);
+  vertices[4]   = glm::vec3(-0.5f, -0.5f, 0.5f);
+  vertices[5]   = glm::vec3(0.5f,  -0.5f, 0.5f);
+  vertices[6]   = glm::vec3(0.5f,  0.5f,  0.5f);
+  vertices[7]   = glm::vec3(-0.5f, 0.5f,  0.5f);
 }
 
 void CSkybox::FillIndexBuffer(GLuint *pBuffer) {
