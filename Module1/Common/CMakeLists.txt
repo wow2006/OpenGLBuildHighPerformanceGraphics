@@ -8,7 +8,9 @@ add_library(Common STATIC
   RenderableObject.cpp
   TargetCamera.cpp
   TexturedPlane.cpp
-  UnitCube.cpp)
+  UnitCube.cpp
+  UnitColorCube.cpp
+  Quad.cpp)
 target_link_libraries(Common
   PUBLIC
   OpenGL::GL
