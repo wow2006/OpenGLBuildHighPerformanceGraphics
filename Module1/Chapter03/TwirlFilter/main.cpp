@@ -47,8 +47,8 @@ static Common *g_pCommon = nullptr;
 void OnInit() {
 	GL_CHECK_ERRORS
 	//load shader
-	g_pCommon->shader.LoadFromFile(GL_VERTEX_SHADER,   "shaders/shader.vert");
-	g_pCommon->shader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/shader.frag");
+	g_pCommon->shader.LoadFromFile(GL_VERTEX_SHADER,   "shaders/Twirl.vert");
+	g_pCommon->shader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/Twirl.frag");
 	//compile and link shader
 	g_pCommon->shader.CreateAndLinkProgram();
 	g_pCommon->shader.Use();

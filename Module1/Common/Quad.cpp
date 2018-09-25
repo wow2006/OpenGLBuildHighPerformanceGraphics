@@ -1,10 +1,10 @@
 #include "Quad.hpp"
 #include <glm/glm.hpp>
 
-CQuad::CQuad(float zpos) {
+CQuad::CQuad(float zpos, const char* vert, const char* frag) {
   // generate the cube object
-  shader.LoadFromFile(GL_VERTEX_SHADER, "shaders/quad_shader.vert");
-  shader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/quad_shader.frag");
+  shader.LoadFromFile(GL_VERTEX_SHADER,   vert);
+  shader.LoadFromFile(GL_FRAGMENT_SHADER, frag);
   shader.CreateAndLinkProgram();
   shader.Use();
   shader.AddAttribute("vVertex");

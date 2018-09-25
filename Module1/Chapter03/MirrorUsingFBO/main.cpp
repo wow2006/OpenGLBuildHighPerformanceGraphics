@@ -135,7 +135,9 @@ void OnInit() {
   g_pCommon->m_pCube = new CUnitColorCube();
 
   // create a quad as mirror object at Z=-2 position
-  g_pCommon->m_pMirror = new CQuad(-2);
+  g_pCommon->m_pMirror = new CQuad(-2,
+                                   "shaders/Mirror/quad_shader.vert",
+                                   "shaders/Mirror/quad_shader.frag");
 
   // initialize FBO object
   InitFBO();
