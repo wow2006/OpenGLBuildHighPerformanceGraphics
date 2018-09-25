@@ -93,19 +93,16 @@ bool CAbstractCamera::IsSphereInFrustum(const glm::vec3 &center,
 bool CAbstractCamera::IsBoxInFrustum(const glm::vec3 &min,
                                      const glm::vec3 &max) {
   for (auto& plane : planes) {
-    glm::vec3 p = min, n = max;
+    glm::vec3 p = min;
     glm::vec3 N = plane.N;
     if (N.x >= 0) {
       p.x = max.x;
-      n.x = min.x;
     }
     if (N.y >= 0) {
       p.y = max.y;
-      n.y = min.y;
     }
     if (N.z >= 0) {
       p.z = max.z;
-      n.z = min.z;
     }
 
     if (plane.GetDistance(p) < 0) {
