@@ -45,7 +45,7 @@ public:
   glm::vec3 nearPts[4];
 
 protected:
-  static constexpr glm::vec3 UP = glm::vec3(0, 1, 0);
+  const glm::vec3 UP = glm::vec3{0, 1, 0};
 
   float yaw, pitch, roll, fov, aspect_ratio, Znear, Zfar;
 

@@ -2,8 +2,6 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "AbstractCamera.hpp"
 
-constexpr glm::vec3 CAbstractCamera::UP;
-
 CAbstractCamera::CAbstractCamera() : Znear{0.1f}, Zfar{1000.f} {}
 
 CAbstractCamera::~CAbstractCamera() = default;
