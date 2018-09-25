@@ -44,8 +44,8 @@ static Common *g_pCommon = nullptr;
 void OnInit() {
   GL_CHECK_ERRORS
   // load g_pCommon->mShader
-  g_pCommon->mShader.LoadFromFile(GL_VERTEX_SHADER, "shaders/shader.vert");
-  g_pCommon->mShader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/shader.frag");
+  g_pCommon->mShader.LoadFromFile(GL_VERTEX_SHADER,   "shaders/Convolution.vert");
+  g_pCommon->mShader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/Convolution.frag");
   // compile and link g_pCommon->mShader
   g_pCommon->mShader.CreateAndLinkProgram();
   g_pCommon->mShader.Use();
@@ -61,7 +61,7 @@ void OnInit() {
   GL_CHECK_ERRORS
 
   // load g_pCommon->mShader
-  g_pCommon->mConvolutionShader.LoadFromFile(GL_VERTEX_SHADER, "shaders/shader.vert");
+  g_pCommon->mConvolutionShader.LoadFromFile(GL_VERTEX_SHADER, "shaders/Convolution.vert");
   g_pCommon->mConvolutionShader.LoadFromFile(GL_FRAGMENT_SHADER,
                                   "shaders/shader_convolution.frag");
   // compile and link g_pCommon->mShader
