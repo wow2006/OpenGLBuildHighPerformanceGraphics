@@ -1,17 +1,13 @@
-language: cpp
+sudo: required
 
-compiler:
-  - gcc
-  - clang
+language: ruby
 
-before_script:
-  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq g++-7
-  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 90
-  - sudo apt install mesa-utils mesa-common-dev freeglut3-dev libglew-dev libglm-dev libsoil-dev cmake -y
-  - mkdir build
-  - cd build
-  - cmake ..
+services:
+  - docker
 
-script: make && make test
+before_install:
+  - docker build -t arch-opengl .
+
+script:
+  - docker run arch-opengl:latest
+
