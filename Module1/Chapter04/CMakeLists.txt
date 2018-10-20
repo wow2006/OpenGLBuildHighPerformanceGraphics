@@ -1,2 +1,3 @@
 add_subdirectory(PerVertexLighting)
+add_subdirectory(PerFragmentLighting)
 
