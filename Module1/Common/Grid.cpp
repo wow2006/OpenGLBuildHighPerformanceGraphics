@@ -8,8 +8,8 @@ CGrid::CGrid(int _width, int _depth) {
   this->depth = _depth;
 
   // setup shader
-  shader.LoadFromFile(GL_VERTEX_SHADER, "shaders/shader.vert");
-  shader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/shader.frag");
+  shader.LoadFromFile(GL_VERTEX_SHADER,   "shaders/GridShader.vert");
+  shader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/GridShader.frag");
   shader.CreateAndLinkProgram();
   shader.Use();
   shader.AddAttribute("vVertex");
