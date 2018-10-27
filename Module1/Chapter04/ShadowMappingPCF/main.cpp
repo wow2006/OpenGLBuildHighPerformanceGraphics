@@ -720,6 +720,7 @@ int main(int argc, char **argv) {
   glutReshapeFunc(OnResize);
   glutMouseFunc(OnMouseDown);
   glutMotionFunc(OnMouseMove);
+  glutMouseWheelFunc(OnMouseWheel);
   glutIdleFunc(OnIdle);
 
   // mainloop call
