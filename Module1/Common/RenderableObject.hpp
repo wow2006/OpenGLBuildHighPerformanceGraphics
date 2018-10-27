@@ -18,6 +18,7 @@ public:
 	virtual void FillIndexBuffer(GLuint* pBuffer)=0;
 	
 	virtual void SetCustomUniforms(){}
+	GLSLShader* GetShader();
 
 	void Init();
 	void Destroy();

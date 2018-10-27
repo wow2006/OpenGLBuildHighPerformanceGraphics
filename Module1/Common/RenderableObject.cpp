@@ -64,3 +64,7 @@ void RenderableObject::Render(const GLfloat *MVP) {
   glBindVertexArray(0);
   shader.UnUse();
 }
+
+GLSLShader* RenderableObject::GetShader() {
+	return &shader;
+}
