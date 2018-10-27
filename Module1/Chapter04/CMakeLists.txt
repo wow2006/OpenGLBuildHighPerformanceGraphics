@@ -2,4 +2,5 @@ add_subdirectory(PerVertexLighting)
 add_subdirectory(PerFragmentLighting)
 add_subdirectory(DirectionalLight)
 add_subdirectory(ShadowMapping)
+add_subdirectory(ShadowMappingPCF)
 
