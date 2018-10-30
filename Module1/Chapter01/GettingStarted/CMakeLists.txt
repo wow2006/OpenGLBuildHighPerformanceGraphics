@@ -2,11 +2,12 @@ add_executable(GettingStarted main.cpp)
 target_link_libraries(GettingStarted
   PUBLIC
   OpenGL::GL
-  GLUT::GLUT
+  SDL2::SDL2
+  SDL2::SDL2main
   GLEW::GLEW)
 target_compile_features(GettingStarted
   PUBLIC
-  cxx_std_14)
+  cxx_std_17)
 target_compile_options(GettingStarted
   PRIVATE
   $<$<CXX_COMPILER_ID:Clang>:-Wall -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Werror -Wno-missing-prototypes>
