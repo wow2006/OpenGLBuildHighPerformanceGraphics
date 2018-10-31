@@ -96,24 +96,24 @@ void OnMouseMove(int x, int y) {
 void OnInit() {
   GL_CHECK_ERRORS;
   // load heightmap shader
-  g_pCommon->shader.LoadFromFile(GL_VERTEX_SHADER, "shaders/shader.vert");
-  g_pCommon->shader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/shader.frag");
+  g_pCommon->shader.LoadFromFile(GL_VERTEX_SHADER,   "shaders/TerrainLoading.vert");
+  g_pCommon->shader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/TerrainLoading.frag");
   // compile and link shader
   g_pCommon->shader.CreateAndLinkProgram();
   g_pCommon->shader.Use();
-    // add attributes and uniforms
-    g_pCommon->shader.AddAttribute("vVertex");
-    g_pCommon->shader.AddUniform("heightMapTexture");
-    g_pCommon->shader.AddUniform("scale");
-    g_pCommon->shader.AddUniform("half_scale");
-    g_pCommon->shader.AddUniform("HALF_TERRAIN_SIZE");
-    g_pCommon->shader.AddUniform("MVP");
-    // set values of constant uniforms as initialization
-    glUniform1i(g_pCommon->shader("heightMapTexture"), 0);
-    glUniform2i(g_pCommon->shader("HALF_TERRAIN_SIZE"),
-                Common::TERRAIN_WIDTH >> 1, Common::TERRAIN_DEPTH >> 1);
-    glUniform1f(g_pCommon->shader("scale"), g_pCommon->scale);
-    glUniform1f(g_pCommon->shader("half_scale"), g_pCommon->half_scale);
+  // add attributes and uniforms
+  g_pCommon->shader.AddAttribute("vVertex");
+  g_pCommon->shader.AddUniform("heightMapTexture");
+  g_pCommon->shader.AddUniform("scale");
+  g_pCommon->shader.AddUniform("half_scale");
+  g_pCommon->shader.AddUniform("HALF_TERRAIN_SIZE");
+  g_pCommon->shader.AddUniform("MVP");
+  // set values of constant uniforms as initialization
+  glUniform1i(g_pCommon->shader("heightMapTexture"), 0);
+  glUniform2i(g_pCommon->shader("HALF_TERRAIN_SIZE"),
+      Common::TERRAIN_WIDTH >> 1, Common::TERRAIN_DEPTH >> 1);
+  glUniform1f(g_pCommon->shader("scale"), g_pCommon->scale);
+  glUniform1f(g_pCommon->shader("half_scale"), g_pCommon->half_scale);
   g_pCommon->shader.UnUse();
 
   GL_CHECK_ERRORS;
@@ -129,7 +129,7 @@ void OnInit() {
     for (i = 0; i < Common::TERRAIN_WIDTH; i++) {
       const auto index = static_cast<std::size_t>(count);
       g_pCommon->vertices[index] = glm::vec3((float(i) / (Common::TERRAIN_WIDTH - 1)), 0,
-                                  (float(j) / (Common::TERRAIN_DEPTH - 1)));
+          (float(j) / (Common::TERRAIN_DEPTH - 1)));
       count++;
     }
   }
@@ -138,7 +138,6 @@ void OnInit() {
   // fill terrain indices
   for (i = 0; i < Common::TERRAIN_DEPTH - 1; i++) {
     for (j = 0; j < Common::TERRAIN_WIDTH - 1; j++) {
-      std::cout << ++count << ' ';
       uint i0 = static_cast<uint>(j + i * Common::TERRAIN_WIDTH);
       uint i1 = i0 + 1;
       uint i2 = static_cast<uint>(i0 + Common::TERRAIN_WIDTH);
@@ -172,13 +171,13 @@ void OnInit() {
   // pass the terrain indices array to element array buffer
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_pCommon->vboIndicesID);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, g_pCommon->indices.size() * sizeof(GLuint), &g_pCommon->indices[0],
-               GL_STATIC_DRAW);
+      GL_STATIC_DRAW);
   GL_CHECK_ERRORS;
 
   // load the heightmap texture using SOIL
   int texture_width = 0, texture_height = 0, channels = 0;
   GLubyte *pData = SOIL_load_image(g_pCommon->filename.c_str(), &texture_width,
-                                   &texture_height, &channels, SOIL_LOAD_L);
+      &texture_height, &channels, SOIL_LOAD_L);
 
   // vertically flip the heightmap image on Y axis since it is inverted
   for (j = 0; j * 2 < texture_height; ++j) {
@@ -202,7 +201,7 @@ void OnInit() {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, texture_width, texture_height, 0,
-               GL_RED, GL_UNSIGNED_BYTE, pData);
+      GL_RED, GL_UNSIGNED_BYTE, pData);
 
   // free SOIL image data
   SOIL_free_image_data(pData);
@@ -219,26 +218,26 @@ void OnInit() {
 
 //release all allocated resources
 void OnShutdown() {
-	//Destroy shader
-	g_pCommon->shader.DeleteShaderProgram();
+  //Destroy shader
+  g_pCommon->shader.DeleteShaderProgram();
 
-	//Destroy vao and vbo
-	glDeleteBuffers(1, &g_pCommon->vboVerticesID);
-	glDeleteBuffers(1, &g_pCommon->vboIndicesID);
-	glDeleteVertexArrays(1, &g_pCommon->vaoID);
+  //Destroy vao and vbo
+  glDeleteBuffers(1, &g_pCommon->vboVerticesID);
+  glDeleteBuffers(1, &g_pCommon->vboIndicesID);
+  glDeleteVertexArrays(1, &g_pCommon->vaoID);
 
-	//Delete textures
-	glDeleteTextures(1, &g_pCommon->heightMapTextureID);
+  //Delete textures
+  glDeleteTextures(1, &g_pCommon->heightMapTextureID);
   std::cout << "Shutdown successfull" << std::endl;
 }
 
 //resize event handler
 void OnResize(int w, int h) {
-	//set the viewport
-	glViewport (0, 0, static_cast<GLsizei>(w), static_cast<GLsizei>(h));
+  //set the viewport
+  glViewport (0, 0, static_cast<GLsizei>(w), static_cast<GLsizei>(h));
 
-	//setup the projection matrix
-	g_pCommon->P = glm::perspective(glm::radians(45.0f), static_cast<GLfloat>(w)/h, 0.01f, 10000.f);
+  //setup the projection matrix
+  g_pCommon->P = glm::perspective(glm::radians(45.0f), static_cast<GLfloat>(w)/h, 0.01f, 10000.f);
 }
 
 // display function
