@@ -9,28 +9,24 @@
 
 
 namespace common {
+enum Attribute {
+  vertex = 0,
+  color
+};
+
 enum class ShaderType : int {
   Vertex_Shader   = 0,
   Geomtery_Shader = 1,
   Fragment_Shader = 2
 };
 
-static GLenum type_to_enum(ShaderType type) {
-  switch(type) {
-  case ShaderType::Vertex_Shader:
-    return GL_VERTEX_SHADER;
-  case ShaderType::Geomtery_Shader:
-   return GL_GEOMETRY_SHADER;
-  case ShaderType::Fragment_Shader:
-    return GL_FRAGMENT_SHADER;
-  }
-}
-
 class ShaderLoader {
 public:
   ShaderLoader();
 
   ~ShaderLoader();
+
+  bool compileShaderFromFile(std::string_view shaderFilePath, ShaderType type);
 
   bool compileShader(std::string_view shaderPath, ShaderType type);
 
@@ -44,8 +40,10 @@ public:
 
   bool AddUniform(std::string_view uniformName);
 
+  GLuint operator[](std::string_view id) const;
+
 protected:
-  std::array<GLuint, static_cast<int>(ShaderType::Fragment_Shader)+1> m_vShaders;
+  std::array<GLuint, 3> m_vShaders = {0, 0, 0};
 
   std::unordered_map<std::string_view, GLuint> mUniforms;
 
@@ -58,6 +56,10 @@ inline void ShaderLoader::use() const {
 
 inline void ShaderLoader::unUse() {
   glUseProgram(0);
+}
+
+inline GLuint ShaderLoader::operator[](std::string_view id) const {
+  return static_cast<GLuint>(mUniforms.at(id));
 }
 
 } // namespace common

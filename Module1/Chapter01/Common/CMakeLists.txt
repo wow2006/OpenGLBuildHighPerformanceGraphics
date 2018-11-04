@@ -2,6 +2,7 @@ add_library(
   Common
   STATIC
   common.cpp
+  ShaderLoader.cpp
 )
 
 target_include_directories(
@@ -27,7 +28,7 @@ target_compile_features(
 target_compile_options(
   Common
   PUBLIC
-  $<$<CXX_COMPILER_ID:Clang>:-Wall -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Werror -Wno-missing-prototypes -Wno-weak-vtables>
+  $<$<CXX_COMPILER_ID:Clang>:-Wall -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Werror -Wno-missing-prototypes -Wno-weak-vtables -Wno-padded>
   $<$<CXX_COMPILER_ID:GNU>:-pedantic -Wall -Wextra -Werror>
   $<$<CXX_COMPILER_ID:MSVC>:/W4>
 )

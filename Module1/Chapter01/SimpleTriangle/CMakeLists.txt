@@ -1,20 +1,14 @@
-add_executable(SimpleTriangle main.cpp GLSLShader.cpp)
+add_executable(
+  SimpleTriangle
+  main.cpp
+)
+
 target_link_libraries(SimpleTriangle
   PUBLIC
   OpenGL::GL
-  GLUT::GLUT
-  GLEW::GLEW)
-target_include_directories(SimpleTriangle
-  PUBLIC
-  ${GLM_INCLUDE_DIR})
-target_compile_features(SimpleTriangle
-  PUBLIC
-  cxx_std_14)
-target_compile_options(SimpleTriangle
-  PRIVATE
-  $<$<CXX_COMPILER_ID:Clang>:-Wall -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Werror -Wno-missing-prototypes -Wno-padded>
-  $<$<CXX_COMPILER_ID:GNU>:-pedantic -Wall -Wextra -Werror>
-  $<$<CXX_COMPILER_ID:MSVC>:/W4>)
+  GLEW::GLEW
+  Common
+)
 
 add_custom_command(TARGET SimpleTriangle POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy           SimpleTriangle                    ${PROJECT_BINARY_DIR}/bin/Module1/Chapter01/SimpleTriangle

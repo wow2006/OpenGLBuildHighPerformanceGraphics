@@ -1,12 +1,16 @@
 #ifndef COMMON_HPP
 #define COMMON_HPP
 #include <iostream>
+#include <fstream>
 #include <unordered_set>
 
 #include <gsl/gsl>
 
 #include "GL_Wrapper.hpp"
 #include <SDL.h>
+
+#define OFFSET(ptr) \
+  reinterpret_cast<const GLvoid *>(ptr)
 
 inline constexpr const char* errorToString(const uint error) {
   switch(error) {
@@ -35,7 +39,7 @@ inline void checkOpenGL(const char* fileName, const char* function, const int li
     return;
   }
   auto errorString = errorToString(error);
-  printf("error %s:%d %s : [%d]%s", fileName, lineNumber, function, error, errorString);
+  printf("error %s:%d %s : [%d]%s\n", fileName, lineNumber, function, error, errorString);
 }
 
 #define GL_CHECK_ERRORS checkOpenGL(__FILE__, __PRETTY_FUNCTION__, __LINE__)

@@ -24,7 +24,7 @@ static void debugCallback(GLenum source, GLenum type, GLuint id,
   (void)severity;
   (void)length;
   (void)data;
-  std::cout << "debug call: " << msg << std::endl;
+  std::cout << "Debug: " << msg << std::endl;
 }
 
 bool Common::initialize() {
@@ -58,6 +58,8 @@ bool Common::initialize() {
   // refresh
   SDL_GL_SetSwapInterval(1);
 
+  glEnable(GL_DEBUG_OUTPUT);
+
   // glew initialization
   glewExperimental = GL_TRUE;
   GLenum err = glewInit();
@@ -70,6 +72,7 @@ bool Common::initialize() {
   }
 
   if (GLEW_KHR_debug) {
+    std::cout << "DEBUG Inialized\n";
     glDebugMessageCallback(debugCallback, nullptr);
   }
 
