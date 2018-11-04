@@ -15,6 +15,18 @@ Common::~Common() {
   SDL_Quit();
 }
 
+static void debugCallback(GLenum source, GLenum type, GLuint id,
+                          GLenum severity, GLsizei length, const GLchar *msg,
+                          const void *data) {
+  (void)source;
+  (void)type;
+  (void)id;
+  (void)severity;
+  (void)length;
+  (void)data;
+  std::cout << "debug call: " << msg << std::endl;
+}
+
 bool Common::initialize() {
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
     std::cerr << "Failed to initialize SDL: " << SDL_GetError() << '\n';
@@ -30,8 +42,8 @@ bool Common::initialize() {
   // Set our OpenGL version.
   // SDL_GL_CONTEXT_CORE gives us only the newer version, deprecated functions
   // are disabled
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
-                      SDL_GL_CONTEXT_PROFILE_CORE);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 
   // 3.3 is part of the modern versions of OpenGL, but most video cards whould
   // be able to run it
@@ -56,6 +68,11 @@ bool Common::initialize() {
       std::cout << "Driver supports OpenGL 3.3\nDetails:" << std::endl;
     }
   }
+
+  if (GLEW_KHR_debug) {
+    glDebugMessageCallback(debugCallback, nullptr);
+  }
+
   return true;
 }
 

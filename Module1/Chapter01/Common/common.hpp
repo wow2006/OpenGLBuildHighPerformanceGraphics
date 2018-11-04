@@ -1,11 +1,44 @@
 #ifndef COMMON_HPP
 #define COMMON_HPP
-#include <gsl/gsl>
 #include <iostream>
+#include <unordered_set>
 
-#include <GL/glew.h>
+#include <gsl/gsl>
 
-#include <SDL2/SDL.h>
+#include "GL_Wrapper.hpp"
+#include <SDL.h>
+
+inline constexpr const char* errorToString(const uint error) {
+  switch(error) {
+    case GL_INVALID_ENUM:
+      return "GL_INVALID_ENUM";
+    case GL_INVALID_VALUE:
+      return "GL_INVALID_VALUE";
+    case GL_INVALID_OPERATION:
+      return "GL_INVALID_OPERATION";
+    case GL_INVALID_FRAMEBUFFER_OPERATION:
+      return "GL_INVALID_FRAMEBUFFER_OPERATION";
+    case GL_OUT_OF_MEMORY:
+      return "GL_OUT_OF_MEMORY";
+    case GL_STACK_UNDERFLOW:
+      return "GL_STACK_UNDERFLOW";
+    case GL_STACK_OVERFLOW:
+      return "GL_STACK_OVERFLOW";
+    default:
+      return "Unknown error";
+  }
+}
+
+inline void checkOpenGL(const char* fileName, const char* function, const int lineNumber) {
+  auto error = glGetError();
+  if(error == GL_NO_ERROR) {
+    return;
+  }
+  auto errorString = errorToString(error);
+  printf("error %s:%d %s : [%d]%s", fileName, lineNumber, function, error, errorString);
+}
+
+#define GL_CHECK_ERRORS checkOpenGL(__FILE__, __PRETTY_FUNCTION__, __LINE__)
 
 namespace common {
 struct Common {
