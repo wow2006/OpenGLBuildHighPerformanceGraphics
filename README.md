@@ -1,6 +1,6 @@
 # OpenGL - Build High Performance Graphics
-[![Build Status](https://travis-ci.org/wow2006/OpenGLBuildHighPerformanceGraphics.svg?branch=master)](https://travis-ci.org/wow2006/OpenGLBuildHighPerformanceGraphics)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/cf035b714a28495b81b1ae12845af8d3)](https://app.codacy.com/app/wow2006/OpenGLBuildHighPerformanceGraphics?utm_source=github.com&utm_medium=referral&utm_content=wow2006/OpenGLBuildHighPerformanceGraphics&utm_campaign=Badge_Grade_Dashboard)
+[![Build Status](https://travis-ci.org/wow2006/OpenGLBuildHighPerformanceGraphics.svg?branch=master)](https://travis-ci.org/wow2006/OpenGLBuildHighPerformanceGraphics) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/cf035b714a28495b81b1ae12845af8d3)](https://app.codacy.com/app/wow2006/OpenGLBuildHighPerformanceGraphics?utm_source=github.com&utm_medium=referral&utm_content=wow2006/OpenGLBuildHighPerformanceGraphics&utm_campaign=Badge_Grade_Dashboard)
+
 Port OpenGL Build High Performance Graphics to CMake. ([Book link](https://www.amazon.com/OpenGL-Build-high-performance-graphics-ebook/dp/B07124RCBT/ref=sr_1_1?ie=UTF8&qid=1533807476&sr=8-1&keywords=OpenGL+Build+High+Performance+Graphics), [Original Source code](https://github.com/PacktPublishing/OpenGL-Build-High-Performance-Graphics))
 
 This book split to three modules
