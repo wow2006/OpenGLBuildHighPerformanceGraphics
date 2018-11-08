@@ -6,8 +6,11 @@
 
 #include <gsl/gsl>
 
+#include <glm/glm.hpp>
+
 #include "GL_Wrapper.hpp"
 #include <SDL.h>
+
 
 #define OFFSET(ptr) \
   reinterpret_cast<const GLvoid *>(ptr)
@@ -44,6 +47,11 @@ inline void checkOpenGL(const char* fileName, const char* function, const int li
 
 #define GL_CHECK_ERRORS checkOpenGL(__FILE__, __PRETTY_FUNCTION__, __LINE__)
 
+struct Vertex {
+  glm::vec3 position;
+  glm::vec3 color;
+};
+
 namespace common {
 struct Common {
   Common();
@@ -66,6 +74,15 @@ struct Common {
   bool initialize();
 
   void parseArgments(gsl::span<char *> &&args);
+};
+
+struct Model {
+  bool initlize(const Vertex*   buffer,  const uint size,
+                const GLushort* indices, const uint indexSize);
+
+  void draw();
+
+  GLuint vaoID = 0, vboVerticesID = 0, vboIndicesID = 0;
 };
 } // namespace common
 #endif //! COMMON_HPP

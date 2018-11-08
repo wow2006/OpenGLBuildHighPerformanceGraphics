@@ -1,6 +1,8 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "common.hpp"
+#include "ShaderLoader.hpp"
+
 
 namespace common {
 
@@ -90,6 +92,44 @@ void Common::parseArgments(gsl::span<char *> &&args) {
       mHeight = std::stoi(*++arg);
     }
   }
+}
+
+bool Model::initlize(const Vertex*   buffer,  const uint size,
+                     const GLushort* indices, const uint indexSize) {
+  // setup triangle vao and vbo stuff
+  glGenVertexArrays(1, &vaoID);
+  glGenBuffers(1, &vboVerticesID);
+  glGenBuffers(1, &vboIndicesID);
+
+  glBindVertexArray(vaoID);
+
+  glBindBuffer(GL_ARRAY_BUFFER, vboVerticesID);
+  // pass triangle verteices to buffer object
+  glBufferData(GL_ARRAY_BUFFER, size,
+      buffer, GL_STATIC_DRAW);
+
+  const GLsizei stride = sizeof(Vertex);
+
+  // enable vertex attribute array for position
+  glEnableVertexAttribArray(common::vertex);
+  glVertexAttribPointer(common::vertex, 3, GL_FLOAT, GL_FALSE,
+      stride, nullptr);
+
+  // enable vertex attribute array for colour
+  glEnableVertexAttribArray(common::color);
+  glVertexAttribPointer(common::color, 3, GL_FLOAT, GL_FALSE, stride,
+      OFFSET(offsetof(Vertex, color)));
+
+  // pass indices to element array buffer
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboIndicesID);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexSize,
+      &indices[0], GL_STATIC_DRAW);
+
+  return true;
+}
+
+void Model::draw() {
+  glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, nullptr);
 }
 
 } // namespace common
