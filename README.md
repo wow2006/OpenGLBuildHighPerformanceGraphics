@@ -8,21 +8,39 @@ This book split to three modules
 
 ### Dependies:
 - OpenGL
-- GLUT `It will be replaced with SDL2`
+- SDL2
 - GLEW `It will be replaced with gl3d`
 - GLM   
-- SOIL `It will be replaced with stb`
 
 Installation:
 -------------
 
 #### Ubuntu 16.04
 ```sh
-$ sudo apt install freeglut3-dev libglew-dev libglm-dev libsoil-dev
+$ sudo apt install libsdl2-dev libglew-dev libglm-dev
 ```
 #### Arch
 ```sh
-$ sudo pacman -S freeglut glew glm soil
+$ sudo pacman -S glew glm sdl2
+```
+
+#### Windows
+```bash
+> # Install vcpkg
+> git clone https://github.com/Microsoft/vcpkg.git
+> cd vcpkg
+
+> .\bootstrap-vcpkg.bat
+> .\vcpkg integrate install
+
+> .\vcpkg.exe install glew:x64-windows
+> .\vcpkg.exe install sdl2:x64-windows
+> .\vcpkg.exe install glm:x64-windows
+```
+
+#### Clone
+```
+> git clone --recursive https://github.com/wow2006/OpenGLBuildHighPerformanceGraphics.git
 ```
 
 ### License

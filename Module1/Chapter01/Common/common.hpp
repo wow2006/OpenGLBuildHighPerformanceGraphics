@@ -9,7 +9,7 @@
 #include <glm/glm.hpp>
 
 #include "GL_Wrapper.hpp"
-#include <SDL.h>
+#include <SDL2\SDL.h>
 
 
 #define OFFSET(ptr) \

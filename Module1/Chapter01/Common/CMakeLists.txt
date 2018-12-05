@@ -1,18 +1,20 @@
+project(Common CXX)
+
 add_library(
-  Common
+  ${PROJECT_NAME}
   STATIC
-  common.cpp
+  ${PROJECT_NAME}.cpp
   ShaderLoader.cpp
 )
 
 target_include_directories(
-  Common
+  ${PROJECT_NAME}
   PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 target_link_libraries(
-  Common
+  ${PROJECT_NAME}
   PUBLIC
   GSL
   SDL2::SDL2
@@ -20,13 +22,13 @@ target_link_libraries(
 )
 
 target_compile_features(
-  Common
+  ${PROJECT_NAME}
   PUBLIC
   cxx_std_17
 )
 
 target_compile_options(
-  Common
+  ${PROJECT_NAME}
   PUBLIC
   $<$<CXX_COMPILER_ID:Clang>:-Wall -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Werror -Wno-missing-prototypes -Wno-weak-vtables -Wno-padded>
   $<$<CXX_COMPILER_ID:GNU>:-pedantic -Wall -Wextra -Werror>
