@@ -3,7 +3,7 @@ project(Common CXX)
 add_library(
   ${PROJECT_NAME}
   STATIC
-  ${PROJECT_NAME}.cpp
+  common.cpp
   ShaderLoader.cpp
 )
 
@@ -16,10 +16,13 @@ target_include_directories(
 target_link_libraries(
   ${PROJECT_NAME}
   PUBLIC
-  gl3w::gl3w
   GSL
+  gl3w::gl3w
+  OpenGL::GL
   SDL2::SDL2
   SDL2::SDL2main
+  PRIVATE
+  ${CMAKE_DL_LIBS}
 )
 
 target_compile_features(
@@ -31,7 +34,7 @@ target_compile_features(
 target_compile_options(
   ${PROJECT_NAME}
   PUBLIC
-  $<$<CXX_COMPILER_ID:Clang>:-Wall -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Werror -Wno-missing-prototypes -Wno-weak-vtables -Wno-padded>
+  $<$<CXX_COMPILER_ID:Clang>:-Wall -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Werror -Wno-missing-prototypes -Wno-weak-vtables -Wno-padded -Wno-reserved-id-macro>
   $<$<CXX_COMPILER_ID:GNU>:-pedantic -Wall -Wextra -Werror>
   $<$<CXX_COMPILER_ID:MSVC>:/W4>
 )

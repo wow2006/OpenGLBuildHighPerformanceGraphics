@@ -16,7 +16,7 @@ Common::~Common() {
   // Shutdown SDL 2
   SDL_Quit();
 }
-
+/*
 static void debugCallback(GLenum source, GLenum type, GLuint id,
                           GLenum severity, GLsizei length, const GLchar *msg,
                           const void *data) {
@@ -28,6 +28,7 @@ static void debugCallback(GLenum source, GLenum type, GLuint id,
   (void)data;
   std::cout << "Debug: " << msg << std::endl;
 }
+*/
 
 bool Common::initialize() {
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {

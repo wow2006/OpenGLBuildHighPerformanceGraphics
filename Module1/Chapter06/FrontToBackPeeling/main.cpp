@@ -108,7 +108,7 @@ void initFBO() {
         g_pCommon->mTexID[i], 0);
   }
 
-  //Now setup the colour attachment for colour blend FBO
+  // Now setup the colour attachment for colour blend FBO
   glGenTextures(1, &g_pCommon->mColorBlenderTexID);
   glBindTexture(GL_TEXTURE_RECTANGLE, g_pCommon->mColorBlenderTexID);
   glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -118,18 +118,18 @@ void initFBO() {
   glTexImage2D(GL_TEXTURE_RECTANGLE, 0, GL_RGBA, Common::WIDTH, Common::HEIGHT,
                0, GL_RGBA, GL_FLOAT, nullptr);
 
-  //generate the colour blend FBO ID
+  // generate the colour blend FBO ID
   glGenFramebuffers(1, &g_pCommon->mColorBlenderFBOID);
   glBindFramebuffer(GL_FRAMEBUFFER, g_pCommon->mColorBlenderFBOID);
 
-  //set the depth attachment of previous FBO as depth attachment for this FBO
+  // set the depth attachment of previous FBO as depth attachment for this FBO
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_RECTANGLE,
                          g_pCommon->mDepthTexID[0], 0);
-  //set the colour blender texture as the FBO colour attachment 
+  // set the colour blender texture as the FBO colour attachment 
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_RECTANGLE,
                          g_pCommon->mColorBlenderTexID, 0);
 
-  //check the FBO completeness status
+  // check the FBO completeness status
   GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
   if(status == GL_FRAMEBUFFER_COMPLETE ) {
     printf("FBO setup successful !!! \n");
