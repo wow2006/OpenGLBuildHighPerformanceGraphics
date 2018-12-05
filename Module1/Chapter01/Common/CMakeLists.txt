@@ -16,6 +16,7 @@ target_include_directories(
 target_link_libraries(
   ${PROJECT_NAME}
   PUBLIC
+  gl3w::gl3w
   GSL
   SDL2::SDL2
   SDL2::SDL2main

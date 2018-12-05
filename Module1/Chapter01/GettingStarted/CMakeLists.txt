@@ -9,7 +9,6 @@ target_link_libraries(
   ${PROJECT_NAME}
   PUBLIC
   OpenGL::GL
-  GLEW::GLEW
   Common
 )
 

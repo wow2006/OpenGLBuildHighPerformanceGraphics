@@ -1,6 +1,6 @@
 #ifndef GL_WRAPPER_HPP
 #define GL_WRAPPER_HPP
-#include <GL/glew.h>
+#include <GL/gl3w.h>
 
 #ifndef uint
 using uint = unsigned int;

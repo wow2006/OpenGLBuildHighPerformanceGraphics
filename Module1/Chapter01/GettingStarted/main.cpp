@@ -16,7 +16,6 @@ int main(int argc, char **argv) {
   }
 
   // print information on screen
-  std::cout << "\tUsing GLEW " << glewGetString(GLEW_VERSION) << std::endl;
   std::cout << "\tVendor: "    << glGetString(GL_VENDOR) << std::endl;
   std::cout << "\tRenderer: "  << glGetString(GL_RENDERER) << std::endl;
   std::cout << "\tVersion: "   << glGetString(GL_VERSION) << std::endl;

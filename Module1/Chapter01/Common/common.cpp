@@ -60,23 +60,21 @@ bool Common::initialize() {
   // refresh
   SDL_GL_SetSwapInterval(1);
 
-  glEnable(GL_DEBUG_OUTPUT);
+  // TODO:
+  // glEnable(GL_DEBUG_OUTPUT);
 
   // glew initialization
-  glewExperimental = GL_TRUE;
-  GLenum err = glewInit();
-  if (GLEW_OK != err) {
-    std::cerr << "Error: " << glewGetErrorString(err) << std::endl;
-  } else {
-    if (GLEW_VERSION_3_3) {
-      std::cout << "Driver supports OpenGL 3.3\nDetails:" << std::endl;
-    }
+  if (gl3wInit()) {
+    std::cerr << "Error: Can not initialize GL3W\n";
+	return false;
   }
 
-  if (GLEW_KHR_debug) {
+  /*TODO:
+  if (glDebugMessageCallback) {
     std::cout << "DEBUG Inialized\n";
     glDebugMessageCallback(debugCallback, nullptr);
   }
+  */
 
   return true;
 }

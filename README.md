@@ -9,8 +9,9 @@ This book split to three modules
 ### Dependies:
 - OpenGL
 - SDL2
-- GLEW `It will be replaced with gl3d`
-- GLM   
+- GL3W
+- GLM
+- GSL 
 
 Installation:
 -------------
