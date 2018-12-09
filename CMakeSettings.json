@@ -9,7 +9,7 @@
       "variables": [
         {
           "name": "CMAKE_TOOLCHAIN_FILE",
-          "value": "$ENV{VCPKG_ROOT}\\scripts\\buildsystems\\vcpkg.cmake"
+          "value": "${env.VCPKG_ROOT}\\scripts\\buildsystems\\vcpkg.cmake"
         }
       ]
     }
