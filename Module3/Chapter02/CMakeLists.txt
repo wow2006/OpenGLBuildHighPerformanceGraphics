@@ -2,4 +2,5 @@
 
 add_subdirectory(00_Point)
 add_subdirectory(01_Line)
+add_subdirectory(02_sinusoid)
 
