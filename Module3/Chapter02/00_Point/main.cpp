@@ -1,17 +1,29 @@
 // STL
+#include <thread>
+#include <cstdio>
+#include <chrono>
 #include <cstdlib>
-#include <string_view>
 // OpenGL
 #include <GLFW/glfw3.h>
 
-constexpr auto g_cWindowsWidth = 640 * 2;
+constexpr auto g_cWindowsWidth  = 640 * 2;
 constexpr auto g_cWindowsHeight = 480;
-constexpr auto g_cWindowTitle = "Chapter 2: Primitive drawings";
+constexpr auto g_cWindowTitle   = "Chapter 2: Primitive drawings";
+auto g_bEnableAliasing = false;
 
 struct Vertex {
   GLfloat x, y, z;
   GLfloat r, g, b, a;
 };
+
+void keyboardCallback(GLFWwindow *pWindow, int key, int scancode, int action, int mods) {
+  (void)pWindow;
+  (void)scancode;
+  (void)mods;
+  if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
+    g_bEnableAliasing = !g_bEnableAliasing;
+  }
+}
 
 void drawPointsDemo();
 
@@ -22,7 +34,7 @@ auto main() -> int {
     return EXIT_FAILURE;
   }
 
-  GLFWwindow *pWindow = glfwCreateWindow(g_cWindowsWidth, g_cWindowsHeight,
+  auto pWindow = glfwCreateWindow(g_cWindowsWidth, g_cWindowsHeight,
                                          g_cWindowTitle, nullptr, nullptr);
   if (pWindow == nullptr) {
     glfwTerminate();
@@ -30,14 +42,22 @@ auto main() -> int {
   }
   glfwMakeContextCurrent(pWindow);
 
-  // enable anti-aliasing
-  glEnable(GL_POINT_SMOOTH);
-  glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+  glfwSetKeyCallback(pWindow, keyboardCallback);
 
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+  std::printf("Press \"SPACE\" to toggle Aliasing\n");
   while (!glfwWindowShouldClose(pWindow)) {
+    if(g_bEnableAliasing) {
+      // enable anti-aliasing
+      glEnable(GL_POINT_SMOOTH);
+      glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    } else {
+      glDisable(GL_POINT_SMOOTH);
+      glDisable(GL_BLEND);
+    }
+
     int width = 0, height = 0;
     glfwGetFramebufferSize(pWindow, &width, &height);
 
