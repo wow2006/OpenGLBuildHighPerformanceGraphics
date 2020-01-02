@@ -1,7 +1,5 @@
 // STL
-#include <thread>
 #include <cstdio>
-#include <chrono>
 #include <cstdlib>
 // OpenGL
 #include <GLFW/glfw3.h>
@@ -45,6 +43,7 @@ auto main() -> int {
   glfwSetKeyCallback(pWindow, keyboardCallback);
 
   std::printf("Press \"SPACE\" to toggle Aliasing\n");
+
   while (!glfwWindowShouldClose(pWindow)) {
     if(g_bEnableAliasing) {
       // enable anti-aliasing
