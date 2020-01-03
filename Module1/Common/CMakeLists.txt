@@ -1,4 +1,7 @@
-add_library(Common STATIC
+# ${CMAKE_SOURCE_DIR}/Module1/Common/CMakeLists.txt
+add_library(
+  Common
+  STATIC
   AbstractCamera.cpp
   FreeCamera.cpp
   GLSLShader.cpp
@@ -10,23 +13,29 @@ add_library(Common STATIC
   TexturedPlane.cpp
   UnitCube.cpp
   UnitColorCube.cpp
-  Quad.cpp)
-target_link_libraries(Common
+  Quad.cpp
+)
+
+target_link_libraries(
+  Common
   PUBLIC
   OpenGL::GL
   GLUT::GLUT
   GLEW::GLEW
-  ${SOIL_LIBRARIES})
-target_include_directories(Common
+  ${SOIL_LIBRARIES}
+  options::options
+)
+
+target_include_directories(
+  Common
   PUBLIC
   ${CMAKE_CURRENT_LIST_DIR}
+)
+
+target_include_directories(
+  Common
+  SYSTEM PUBLIC
   ${GLM_INCLUDE_DIR}
-  ${SOIL_INCLUDE_DIRS})
-target_compile_features(Common
-  PUBLIC
-  cxx_std_14)
-target_compile_options(Common
-  PUBLIC
-  $<$<CXX_COMPILER_ID:Clang>:-Wall -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Werror -Wno-missing-prototypes -Wno-padded>
-  $<$<CXX_COMPILER_ID:GNU>:-pedantic -Wall -Wextra -Werror>
-  $<$<CXX_COMPILER_ID:MSVC>:/W4>)
+  ${SOIL_INCLUDE_DIRS}
+)
+

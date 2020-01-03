@@ -6,15 +6,36 @@
 
 class CAbstractCamera {
 public:
+  /**
+   * @brief Default constructor
+   */
   CAbstractCamera();
 
+  /**
+   * @brief Default destructor
+   */
   virtual ~CAbstractCamera();
 
+  /**
+   * @brief Create project matrix.
+   *
+   * @param fovy Field of view at y axis.
+   * @param aspectRatio Aspect ratio between width and height.
+   * @param near Distance between near plane.
+   * @param far Distance between far plane.
+   */
   void SetupProjection(const float fovy, const float aspectRatio,
                        const float near = 0.1f, const float far = 1000.0f);
 
   virtual void Update() = 0;
 
+  /**
+  * @brief Rotate camera view using eular rotation.
+  *
+  * @param yaw
+  * @param pitch
+  * @param roll
+  */
   virtual void Rotate(const float yaw, const float pitch, const float roll);
 
   const glm::mat4 GetViewMatrix() const;
