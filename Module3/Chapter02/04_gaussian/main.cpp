@@ -1,3 +1,5 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 // STL
 #include <cmath>
 #include <cstdlib>
@@ -208,7 +210,7 @@ void gaussianDemo(float sigma) {
   const int grid_x = 1000;
   const int grid_y = 1000;
   const int num_points = grid_x * grid_y;
-  Data *data = (Data *)malloc(sizeof(Data) * num_points);
+  std::vector<Data> data(num_points);
   int data_counter = 0;
   for (int x = -grid_x / 2; x < grid_x / 2; x += 1) {
     for (int y = -grid_y / 2; y < grid_y / 2; y += 1) {
@@ -225,6 +227,5 @@ void gaussianDemo(float sigma) {
     }
   }
   // visualize the result using a 2D heat map
-  draw2DHeatMap(data, num_points);
-  free(data);
+  draw2DHeatMap(data.data(), num_points);
 }

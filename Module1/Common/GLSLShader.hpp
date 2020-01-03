@@ -23,8 +23,8 @@ public:
 
 private:
   enum ShaderType { VERTEX_SHADER, FRAGMENT_SHADER, GEOMETRY_SHADER };
-  GLuint _program;
-  int _totalShaders;
+  GLuint _program = 0;
+  int _totalShaders = 0;
   GLuint _shaders[3]; // 0->vertexshader, 1->fragmentshader, 2->geometryshader
   std::map<std::string, GLuint> _attributeList;
   std::map<std::string, GLuint> _uniformLocationList;

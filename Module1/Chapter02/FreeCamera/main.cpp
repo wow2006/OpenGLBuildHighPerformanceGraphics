@@ -1,15 +1,16 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+// STL
 #include <iostream>
 #include <sstream>
-
+// OpenGL
 #include <GL/glew.h>
 #include <GL/freeglut.h>
-
+// GLM
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
+// Internal
 #include "FreeCamera.hpp"
 #include "GLSLShader.hpp"
 #include "TexturedPlane.hpp"
@@ -22,7 +23,7 @@ struct Common {
   static constexpr int HEIGHT = 960;
 
   // for floating point imprecision
-  static constexpr float EPSILON = 0.001f;
+  static constexpr float EPSILON  = 0.001f;
   static constexpr float EPSILON2 = EPSILON * EPSILON;
 
   // camera tranformation variables
@@ -219,16 +220,16 @@ void OnIdle() {
 // display callback function
 void OnRender() {
   // timing related calcualtion
-  g_pCommon->last_time = g_pCommon->current_time;
+  g_pCommon->last_time    = g_pCommon->current_time;
   g_pCommon->current_time = glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
-  g_pCommon->dt = g_pCommon->current_time - g_pCommon->last_time;
+  g_pCommon->dt           = g_pCommon->current_time - g_pCommon->last_time;
 
   // clear color buffer and depth buffer
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // set the camera transformation
-  glm::mat4 MV = g_pCommon->cam.GetViewMatrix();
-  glm::mat4 P = g_pCommon->cam.GetProjectionMatrix();
+  glm::mat4 MV  = g_pCommon->cam.GetViewMatrix();
+  glm::mat4 P   = g_pCommon->cam.GetProjectionMatrix();
   glm::mat4 MVP = P * MV;
 
   // render the chekered plane
@@ -266,7 +267,7 @@ void OnKey(unsigned char key, int /*x*/, int /*y*/) {
   glutPostRedisplay();
 }
 
-int main(int argc, char **argv) {
+auto main(int argc, char **argv) -> int {
   Common common;
   g_pCommon = &common;
 
@@ -283,6 +284,7 @@ int main(int argc, char **argv) {
   GLenum err = glewInit();
   if (GLEW_OK != err) {
     std::cerr << "Error: " << glewGetErrorString(err) << std::endl;
+    return EXIT_FAILURE;
   } else {
     if (GLEW_VERSION_3_3) {
       std::cout << "Driver supports OpenGL 3.3\nDetails:" << std::endl;
@@ -292,11 +294,11 @@ int main(int argc, char **argv) {
   GL_CHECK_ERRORS
 
   // print information on screen
-  std::cout << "\tUsing GLEW " << glewGetString(GLEW_VERSION) << std::endl;
-  std::cout << "\tVendor: " << glGetString(GL_VENDOR) << std::endl;
-  std::cout << "\tRenderer: " << glGetString(GL_RENDERER) << std::endl;
-  std::cout << "\tVersion: " << glGetString(GL_VERSION) << std::endl;
-  std::cout << "\tGLSL: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+  std::cout << "\tUsing GLEW " << glewGetString(GLEW_VERSION)              << std::endl;
+  std::cout << "\tVendor: "    << glGetString(GL_VENDOR)                   << std::endl;
+  std::cout << "\tRenderer: "  << glGetString(GL_RENDERER)                 << std::endl;
+  std::cout << "\tVersion: "   << glGetString(GL_VERSION)                  << std::endl;
+  std::cout << "\tGLSL: "      << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
   GL_CHECK_ERRORS
 
@@ -315,5 +317,5 @@ int main(int argc, char **argv) {
   // call main loop
   glutMainLoop();
 
-  return 0;
+  return EXIT_SUCCESS;
 }

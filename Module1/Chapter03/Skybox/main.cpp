@@ -1,8 +1,8 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <array>
-#include <memory>
 #include <iostream>
+#include <memory>
 
 #include <GL/glew.h>
 #include <GL/freeglut.h>
@@ -38,9 +38,8 @@ struct Common {
 
   // skybox texture names
   std::array<const char *, 6> texture_names = {
-      "media/ocean/posx.png", "media/ocean/negx.png",
-      "media/ocean/posy.png", "media/ocean/negy.png",
-      "media/ocean/posz.png", "media/ocean/negz.png"};
+      "media/ocean/posx.png", "media/ocean/negx.png", "media/ocean/posy.png",
+      "media/ocean/negy.png", "media/ocean/posz.png", "media/ocean/negz.png"};
 };
 static Common *g_pCommon = nullptr;
 
@@ -93,11 +92,12 @@ void OnInit() {
 
   std::cout << "Loading skybox images: ..." << std::endl;
   for (int i = 0; i < 6; i++) {
-    const auto texture_name = g_pCommon->texture_names[static_cast<std::size_t>(i)];
+    const auto texture_name =
+        g_pCommon->texture_names[static_cast<std::size_t>(i)];
     std::cout << "\tLoading: " << texture_name << " ... ";
-    pData[i] = SOIL_load_image(texture_name, &texture_widths[i],
-                               &texture_heights[i], &channels[i],
-                               SOIL_LOAD_AUTO);
+    pData[i] =
+        SOIL_load_image(texture_name, &texture_widths[i], &texture_heights[i],
+                        &channels[i], SOIL_LOAD_AUTO);
     std::cout << "done." << std::endl;
   }
 
@@ -122,15 +122,15 @@ void OnInit() {
   GL_CHECK_ERRORS
 
   // set the image format
-  const auto format         = static_cast<GLenum>((channels[0] == 4) ? GL_RGBA : GL_RGB);
+  const auto format =
+      static_cast<GLenum>((channels[0] == 4) ? GL_RGBA : GL_RGB);
   const auto internalFormat = static_cast<GLint>(format);
   // load the 6 images
   for (int i = 0; i < 6; i++) {
     // allocate cubemap data
     const auto index = static_cast<GLenum>(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i);
-    glTexImage2D(index, 0, internalFormat,
-                 texture_widths[i], texture_heights[i], 0, format,
-                 GL_UNSIGNED_BYTE, pData[i]);
+    glTexImage2D(index, 0, internalFormat, texture_widths[i],
+                 texture_heights[i], 0, format, GL_UNSIGNED_BYTE, pData[i]);
 
     // free SOIL image data
     SOIL_free_image_data(pData[i]);
@@ -142,7 +142,7 @@ void OnInit() {
 
 // release all allocated resources
 void OnShutdown() {
-  g_pCommon->skybox.release();
+  g_pCommon->skybox.reset();
 
   glDeleteTextures(1, &g_pCommon->skyboxTextureID);
   std::cout << "Shutdown successfull" << std::endl;
@@ -150,11 +150,11 @@ void OnShutdown() {
 
 // resize event handler
 void OnResize(int w, int h) {
-	//set the viewport
+  // set the viewport
   glViewport(0, 0, static_cast<GLsizei>(w), static_cast<GLsizei>(h));
   // setup the projection matrix
-  g_pCommon->P = glm::perspective(45.0f, static_cast<GLfloat>(w) /
-                  static_cast<GLfloat>(h), 0.1f, 1000.f);
+  g_pCommon->P = glm::perspective(
+      45.0f, static_cast<GLfloat>(w) / static_cast<GLfloat>(h), 0.1f, 1000.f);
 }
 
 // idle event handler
@@ -168,10 +168,12 @@ void OnRender() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // set the camera transform
-  //const auto T   = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, g_pCommon->dist));
-  const auto Rx  = glm::rotate(glm::mat4(1), g_pCommon->rX, glm::vec3(1.0f, 0.0f, 0.0f));
-  const auto MV  = glm::rotate(Rx, g_pCommon->rY, glm::vec3(0.0f, 1.0f, 0.0f));
-  const auto S   = glm::scale(glm::mat4(1), glm::vec3(1000.0));
+  // const auto T   = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f,
+  // g_pCommon->dist));
+  const auto Rx =
+      glm::rotate(glm::mat4(1), g_pCommon->rX, glm::vec3(1.0f, 0.0f, 0.0f));
+  const auto MV = glm::rotate(Rx, g_pCommon->rY, glm::vec3(0.0f, 1.0f, 0.0f));
+  const auto S = glm::scale(glm::mat4(1), glm::vec3(1000.0));
   const auto MVP = g_pCommon->P * MV * S;
 
   // render the skybox object
@@ -207,10 +209,10 @@ int main(int argc, char **argv) {
 
   // print information on screen
   std::cout << "\tUsing GLEW " << glewGetString(GLEW_VERSION) << std::endl;
-  std::cout << "\tVendor: "    << glGetString(GL_VENDOR)      << std::endl;
-  std::cout << "\tRenderer: "  << glGetString(GL_RENDERER)    << std::endl;
-  std::cout << "\tVersion: "   << glGetString(GL_VERSION)     << std::endl;
-  std::cout << "\tGLSL: "      << glGetString(GL_SHADING_LANGUAGE_VERSION)
+  std::cout << "\tVendor: " << glGetString(GL_VENDOR) << std::endl;
+  std::cout << "\tRenderer: " << glGetString(GL_RENDERER) << std::endl;
+  std::cout << "\tVersion: " << glGetString(GL_VERSION) << std::endl;
+  std::cout << "\tGLSL: " << glGetString(GL_SHADING_LANGUAGE_VERSION)
             << std::endl;
 
   GL_CHECK_ERRORS

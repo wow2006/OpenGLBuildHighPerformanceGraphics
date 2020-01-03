@@ -1,5 +1,9 @@
-#include "Quad.hpp"
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+// GLM
 #include <glm/glm.hpp>
+// Internal
+#include "Quad.hpp"
 
 CQuad::CQuad(float zpos, const char* vert, const char* frag) {
   // generate the cube object

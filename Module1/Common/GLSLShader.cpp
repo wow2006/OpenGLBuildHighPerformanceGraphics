@@ -4,8 +4,7 @@
 #include <iostream>
 
 GLSLShader::GLSLShader() {
-  _totalShaders = 0;
-  _shaders[VERTEX_SHADER] = 0;
+  _shaders[VERTEX_SHADER]   = 0;
   _shaders[FRAGMENT_SHADER] = 0;
   _shaders[GEOMETRY_SHADER] = 0;
   _attributeList.clear();

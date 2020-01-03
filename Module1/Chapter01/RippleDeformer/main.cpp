@@ -22,9 +22,9 @@ struct Common {
   GLSLShader shader;
 
   //vertex array and vertex buffer object IDs
-  GLuint vaoID;
-  GLuint vboVerticesID;
-  GLuint vboIndicesID;
+  GLuint vaoID = 0;
+  GLuint vboVerticesID = 0;
+  GLuint vboIndicesID = 0;
 
   static constexpr int NUM_X = 40; // total quads on X axis
   static constexpr int NUM_Z = 40; // total quads on Z axis

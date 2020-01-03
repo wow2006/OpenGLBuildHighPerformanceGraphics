@@ -1,18 +1,19 @@
-#include <GL/glew.h>
-
-#include <GL/freeglut.h>
-
+// STL
 #include <vector>
 #include <string>
 #include <iostream>
-
+// GLEW
+#include <GL/glew.h>
+// Freeglut
+#include <GL/freeglut.h>
+// GLM
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
+// SOIL
 #include <SOIL.h>
-
-#include <GLSLShader.hpp>
+// Internal
+#include "GLSLShader.hpp"
 
 #define GL_CHECK_ERRORS assert(glGetError() == GL_NO_ERROR)
 
@@ -34,8 +35,8 @@ struct Common {
   GLuint heightMapTextureID;
 
   // heightmap texture dimensions and half dimensions
-  static constexpr int TERRAIN_WIDTH = 512;
-  static constexpr int TERRAIN_DEPTH = 512;
+  static constexpr int TERRAIN_WIDTH      = 512;
+  static constexpr int TERRAIN_DEPTH      = 512;
   static constexpr int TERRAIN_HALF_WIDTH = TERRAIN_WIDTH >> 1;
   static constexpr int TERRAIN_HALF_DEPTH = TERRAIN_DEPTH >> 1;
 
@@ -44,7 +45,7 @@ struct Common {
   float half_scale = scale / 2.0f;
 
   // total vertices and indices in the terrain
-  static constexpr int TOTAL = (TERRAIN_WIDTH * TERRAIN_DEPTH);
+  static constexpr int TOTAL         = (TERRAIN_WIDTH * TERRAIN_DEPTH);
   static constexpr int TOTAL_INDICES = TOTAL * 2 * 3;
 
   // heightmap filename
@@ -52,7 +53,7 @@ struct Common {
 
   // height map vertices and indices
   std::vector<glm::vec3> vertices = std::vector<glm::vec3>(TOTAL);
-  std::vector<GLuint> indices = std::vector<GLuint>(TOTAL_INDICES);
+  std::vector<GLuint> indices     = std::vector<GLuint>(TOTAL_INDICES);
 
   // projection and modelview matrices
   glm::mat4 P  = glm::mat4(1);
@@ -285,6 +286,7 @@ int main(int argc, char* argv[]) {
   GLenum err = glewInit();
   if (GLEW_OK != err) {
     std::cerr << "Error: " << glewGetErrorString(err) << std::endl;
+    return EXIT_FAILURE;
   } else {
     if (GLEW_VERSION_3_3) {
       std::cout << "Driver supports OpenGL 3.3\nDetails:" << std::endl;
@@ -294,11 +296,11 @@ int main(int argc, char* argv[]) {
   GL_CHECK_ERRORS;
 
   // output hardware information
-  std::cout << "\tUsing GLEW " << glewGetString(GLEW_VERSION) << std::endl;
-  std::cout << "\tVendor: " << glGetString(GL_VENDOR) << std::endl;
-  std::cout << "\tRenderer: " << glGetString(GL_RENDERER) << std::endl;
-  std::cout << "\tVersion: " << glGetString(GL_VERSION) << std::endl;
-  std::cout << "\tGLSL: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+  std::cout << "\tUsing GLEW " << glewGetString(GLEW_VERSION)              << std::endl;
+  std::cout << "\tVendor: "    << glGetString(GL_VENDOR)                   << std::endl;
+  std::cout << "\tRenderer: "  << glGetString(GL_RENDERER)                 << std::endl;
+  std::cout << "\tVersion: "   << glGetString(GL_VERSION)                  << std::endl;
+  std::cout << "\tGLSL: "      << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
   GL_CHECK_ERRORS;
 
@@ -315,5 +317,5 @@ int main(int argc, char* argv[]) {
   // call main loop
   glutMainLoop();
 
-  return 0;
+  return EXIT_SUCCESS;
 }

@@ -9,14 +9,14 @@ public:
 	virtual ~RenderableObject();
 
 	void Render(const float* MVP);
-	
+
 	virtual int GetTotalVertices()=0;
 	virtual int GetTotalIndices()=0;
 	virtual GLenum GetPrimitiveType() =0;
 
 	virtual void FillVertexBuffer(GLfloat* pBuffer)=0;
 	virtual void FillIndexBuffer(GLuint* pBuffer)=0;
-	
+
 	virtual void SetCustomUniforms(){}
 	GLSLShader* GetShader();
 
@@ -24,13 +24,13 @@ public:
 	void Destroy();
 
 protected:
-	GLuint vaoID;
-	GLuint vboVerticesID;
-	GLuint vboIndicesID;
-	
+	GLuint vaoID = 0;
+	GLuint vboVerticesID = 0;
+	GLuint vboIndicesID = 0;
+
 	GLSLShader shader;
 
-	GLenum primType;
-	int totalVertices, totalIndices;
+	GLenum primType = 0;
+	int totalVertices = 0, totalIndices = 0;
 };
 

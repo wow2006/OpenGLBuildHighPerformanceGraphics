@@ -1,6 +1,8 @@
 #pragma once
-#include "Plane.hpp"
+// GLM
 #include <glm/gtc/matrix_transform.hpp>
+// Internal
+#include "Plane.hpp"
 
 class CAbstractCamera {
 public:

@@ -1,3 +1,5 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <GL/glew.h>
 
 #include <cmath>
@@ -27,11 +29,11 @@ struct Common {
   static constexpr int WIDTH = 1024;
   static constexpr int HEIGHT = 768;
 
-  //shadowmap texture dimensions
+  // shadowmap texture dimensions
   static constexpr int SHADOWMAP_WIDTH = 512;
   static constexpr int SHADOWMAP_HEIGHT = 512;
 
-  //shadowmapping and flat shader
+  // shadowmapping and flat shader
   GLSLShader shader, flatshader;
 
   // sphere vertex array and vertex buffer object IDs
@@ -44,7 +46,7 @@ struct Common {
   GLuint cubeVerticesVBO;
   GLuint cubeIndicesVBO;
 
-  //plane vertex array and vertex buffer object IDs
+  // plane vertex array and vertex buffer object IDs
   GLuint planeVAOID;
   GLuint planeVerticesVBO;
   GLuint planeIndicesVBO;
@@ -62,7 +64,7 @@ struct Common {
   float rX = 25, rY = -40, dist = -10;
 
   // objectspace light position
-  glm::vec3 lightPosOS = glm::vec3(0,2,0);
+  glm::vec3 lightPosOS = glm::vec3(0, 2, 0);
 
   // vertices and indices for sphere/cube
   std::vector<Vertex> vertices;
@@ -70,21 +72,21 @@ struct Common {
   int totalSphereTriangles = 0;
 
   // spherical coorindates for light direction
-  float theta  = -7;
-  float phi    = -0.77f;
+  float theta = -7;
+  float phi = -0.77f;
   float radius = 5;
 
-  //shadow map texture ID
+  // shadow map texture ID
   GLuint shadowMapTexID;
 
-  //FBO ID
+  // FBO ID
   GLuint fboID;
 
-  glm::mat4 MV_L; //light modelview matrix
-  glm::mat4 P_L;	//light projection matrix
-  glm::mat4 B;    //light bias matrix
-  glm::mat4 BP;   //light bias and projection matrix combined
-  glm::mat4 S;    //light's combined MVPB matrix
+  glm::mat4 MV_L; // light modelview matrix
+  glm::mat4 P_L;  // light projection matrix
+  glm::mat4 B;    // light bias matrix
+  glm::mat4 BP;   // light bias and projection matrix combined
+  glm::mat4 S;    // light's combined MVPB matrix
 };
 static Common *g_pCommon = nullptr;
 
@@ -210,27 +212,33 @@ void CreateCube(const float &size, std::vector<Vertex> &vertices,
 }
 
 // Generates a plane of the given width and depth
-void CreatePlane(const float width, const float depth, std::vector<Vertex>& vertices, std::vector<GLushort>& indices) {
-	float halfW = width/2.0f;
-	float halfD = depth/2.0f;
+void CreatePlane(const float width, const float depth,
+                 std::vector<Vertex> &vertices,
+                 std::vector<GLushort> &indices) {
+  float halfW = width / 2.0f;
+  float halfD = depth / 2.0f;
 
-	indices.resize(6);
-	vertices.resize(4);
-	glm::vec3 normal=glm::vec3(0,1,0);
+  indices.resize(6);
+  vertices.resize(4);
+  glm::vec3 normal = glm::vec3(0, 1, 0);
 
-	vertices[0].pos = glm::vec3(-halfW,0.01,-halfD); vertices[0].normal=normal;
-	vertices[1].pos = glm::vec3(-halfW,0.01, halfD); vertices[1].normal=normal;
-	vertices[2].pos = glm::vec3( halfW,0.01, halfD); vertices[2].normal=normal;
-	vertices[3].pos = glm::vec3( halfW,0.01,-halfD); vertices[3].normal=normal;
+  vertices[0].pos = glm::vec3(-halfW, 0.01, -halfD);
+  vertices[0].normal = normal;
+  vertices[1].pos = glm::vec3(-halfW, 0.01, halfD);
+  vertices[1].normal = normal;
+  vertices[2].pos = glm::vec3(halfW, 0.01, halfD);
+  vertices[2].normal = normal;
+  vertices[3].pos = glm::vec3(halfW, 0.01, -halfD);
+  vertices[3].normal = normal;
 
-	//fill indices array
-	indices[0]=0;
-	indices[1]=1;
-	indices[2]=2;
+  // fill indices array
+  indices[0] = 0;
+  indices[1] = 1;
+  indices[2] = 2;
 
-	indices[3]=0;
-	indices[4]=2;
-	indices[5]=3;
+  indices[3] = 0;
+  indices[4] = 2;
+  indices[5] = 3;
 }
 
 // Mouse click handler
@@ -262,11 +270,10 @@ void OnMouseMove(int x, int y) {
     g_pCommon->lightPosOS.z =
         std::sin(g_pCommon->theta) * std::sin(g_pCommon->phi);
 
-		//update light's MV matrix
-		g_pCommon->MV_L = glm::lookAt(g_pCommon->lightPosOS,
-                                  glm::vec3(0,0,0),
-                                  glm::vec3(0,1,0));
-		g_pCommon->S = g_pCommon->BP * g_pCommon->MV_L;
+    // update light's MV matrix
+    g_pCommon->MV_L = glm::lookAt(g_pCommon->lightPosOS, glm::vec3(0, 0, 0),
+                                  glm::vec3(0, 1, 0));
+    g_pCommon->S = g_pCommon->BP * g_pCommon->MV_L;
   } else {
     g_pCommon->rY += (x - g_pCommon->oldX) / 5.0f;
     g_pCommon->rX += (y - g_pCommon->oldY) / 5.0f;
@@ -280,217 +287,234 @@ void OnMouseMove(int x, int y) {
 
 // OpenGL initialization
 void OnInit() {
-	// Load the flat shader
-	g_pCommon->flatshader.LoadFromFile(GL_VERTEX_SHADER,   "shaders/flatshader.vert");
-	g_pCommon->flatshader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/flatshader.frag");
-	// compile and link shader
-	g_pCommon->flatshader.CreateAndLinkProgram();
-	g_pCommon->flatshader.Use();
-	// add attributes and uniforms
-	g_pCommon->flatshader.AddAttribute("vVertex");
-	g_pCommon->flatshader.AddUniform("MVP");
-	g_pCommon->flatshader.UnUse();
+  // Load the flat shader
+  g_pCommon->flatshader.LoadFromFile(GL_VERTEX_SHADER,
+                                     "shaders/flatshader.vert");
+  g_pCommon->flatshader.LoadFromFile(GL_FRAGMENT_SHADER,
+                                     "shaders/flatshader.frag");
+  // compile and link shader
+  g_pCommon->flatshader.CreateAndLinkProgram();
+  g_pCommon->flatshader.Use();
+  // add attributes and uniforms
+  g_pCommon->flatshader.AddAttribute("vVertex");
+  g_pCommon->flatshader.AddUniform("MVP");
+  g_pCommon->flatshader.UnUse();
 
-	//load the shadow mapping shader
-	g_pCommon->shader.LoadFromFile(GL_VERTEX_SHADER, "shaders/PointLightShadowMapped.vert");
-	g_pCommon->shader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/PointLightShadowMapped.frag");
-	//compile and link shader
-	g_pCommon->shader.CreateAndLinkProgram();
-	g_pCommon->shader.Use();
-	//add attributes and uniforms
-	g_pCommon->shader.AddAttribute("vVertex");
-	g_pCommon->shader.AddAttribute("vNormal");
-	g_pCommon->shader.AddUniform("MVP");
-	g_pCommon->shader.AddUniform("MV");
-	g_pCommon->shader.AddUniform("M");
-	g_pCommon->shader.AddUniform("N");
-	g_pCommon->shader.AddUniform("S");
-	g_pCommon->shader.AddUniform("light_position");
-	g_pCommon->shader.AddUniform("diffuse_color");
-	g_pCommon->shader.AddUniform("bIsLightPass");
-	g_pCommon->shader.AddUniform("shadowMap");
-	//pass value of constant uniforms at initialization
-	glUniform1i(g_pCommon->shader("shadowMap"),0);
-	g_pCommon->shader.UnUse();
+  // load the shadow mapping shader
+  g_pCommon->shader.LoadFromFile(GL_VERTEX_SHADER,
+                                 "shaders/PointLightShadowMapped.vert");
+  g_pCommon->shader.LoadFromFile(GL_FRAGMENT_SHADER,
+                                 "shaders/PointLightShadowMapped.frag");
+  // compile and link shader
+  g_pCommon->shader.CreateAndLinkProgram();
+  g_pCommon->shader.Use();
+  // add attributes and uniforms
+  g_pCommon->shader.AddAttribute("vVertex");
+  g_pCommon->shader.AddAttribute("vNormal");
+  g_pCommon->shader.AddUniform("MVP");
+  g_pCommon->shader.AddUniform("MV");
+  g_pCommon->shader.AddUniform("M");
+  g_pCommon->shader.AddUniform("N");
+  g_pCommon->shader.AddUniform("S");
+  g_pCommon->shader.AddUniform("light_position");
+  g_pCommon->shader.AddUniform("diffuse_color");
+  g_pCommon->shader.AddUniform("bIsLightPass");
+  g_pCommon->shader.AddUniform("shadowMap");
+  // pass value of constant uniforms at initialization
+  glUniform1i(g_pCommon->shader("shadowMap"), 0);
+  g_pCommon->shader.UnUse();
 
-	GL_CHECK_ERRORS;
+  GL_CHECK_ERRORS;
 
-	//setup sphere geometry
-	CreateSphere(1.0f,10,10, g_pCommon->vertices, g_pCommon->indices);
+  // setup sphere geometry
+  CreateSphere(1.0f, 10, 10, g_pCommon->vertices, g_pCommon->indices);
 
-	//setup sphere vao and vbo stuff
-	glGenVertexArrays(1, &g_pCommon->sphereVAOID);
-	glGenBuffers(1,      &g_pCommon->sphereVerticesVBO);
-	glGenBuffers(1,      &g_pCommon->sphereIndicesVBO);
-	glBindVertexArray(g_pCommon->sphereVAOID);
+  // setup sphere vao and vbo stuff
+  glGenVertexArrays(1, &g_pCommon->sphereVAOID);
+  glGenBuffers(1, &g_pCommon->sphereVerticesVBO);
+  glGenBuffers(1, &g_pCommon->sphereIndicesVBO);
+  glBindVertexArray(g_pCommon->sphereVAOID);
 
-		glBindBuffer(GL_ARRAY_BUFFER, g_pCommon->sphereVerticesVBO);
-		//pass vertices to the buffer object
-		glBufferData(GL_ARRAY_BUFFER, g_pCommon->vertices.size()*sizeof(Vertex),
-                &g_pCommon->vertices[0], GL_STATIC_DRAW);
-		GL_CHECK_ERRORS;
-		//enable vertex attribute array for position
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
-		GL_CHECK_ERRORS;
-		//enable vertex attribute array for normal
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE,sizeof(Vertex), reinterpret_cast<const GLvoid*>(offsetof(Vertex, normal)));
-		GL_CHECK_ERRORS;
-		//pass sphere indices to element array buffer 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_pCommon->sphereIndicesVBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, g_pCommon->indices.size() * sizeof(GLushort),
-                 &g_pCommon->indices[0], GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, g_pCommon->sphereVerticesVBO);
+  // pass vertices to the buffer object
+  glBufferData(GL_ARRAY_BUFFER, g_pCommon->vertices.size() * sizeof(Vertex),
+               &g_pCommon->vertices[0], GL_STATIC_DRAW);
+  GL_CHECK_ERRORS;
+  // enable vertex attribute array for position
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
+  GL_CHECK_ERRORS;
+  // enable vertex attribute array for normal
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(
+      1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+      reinterpret_cast<const GLvoid *>(offsetof(Vertex, normal)));
+  GL_CHECK_ERRORS;
+  // pass sphere indices to element array buffer
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_pCommon->sphereIndicesVBO);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+               g_pCommon->indices.size() * sizeof(GLushort),
+               &g_pCommon->indices[0], GL_STATIC_DRAW);
 
-	//store the total number of sphere triangles
-	g_pCommon->totalSphereTriangles = static_cast<int>(g_pCommon->indices.size());
+  // store the total number of sphere triangles
+  g_pCommon->totalSphereTriangles = static_cast<int>(g_pCommon->indices.size());
 
-	//clear the vertices and indices vectors as we will reuse them
-	//for cubes
-	g_pCommon->vertices.clear();
-	g_pCommon->indices.clear();
+  // clear the vertices and indices vectors as we will reuse them
+  // for cubes
+  g_pCommon->vertices.clear();
+  g_pCommon->indices.clear();
 
-	//setup cube geometry
-	CreateCube(2, g_pCommon->vertices, g_pCommon->indices);
+  // setup cube geometry
+  CreateCube(2, g_pCommon->vertices, g_pCommon->indices);
 
-	//setup cube vao and vbo stuff
-	glGenVertexArrays(1, &g_pCommon->cubeVAOID);
-	glGenBuffers(1,      &g_pCommon->cubeVerticesVBO);
-	glGenBuffers(1,      &g_pCommon->cubeIndicesVBO);
-	glBindVertexArray(g_pCommon->cubeVAOID);
+  // setup cube vao and vbo stuff
+  glGenVertexArrays(1, &g_pCommon->cubeVAOID);
+  glGenBuffers(1, &g_pCommon->cubeVerticesVBO);
+  glGenBuffers(1, &g_pCommon->cubeIndicesVBO);
+  glBindVertexArray(g_pCommon->cubeVAOID);
 
-		glBindBuffer(GL_ARRAY_BUFFER, g_pCommon->cubeVerticesVBO);
-		//pass vertices to the buffer object
-		glBufferData(GL_ARRAY_BUFFER, g_pCommon->vertices.size()*sizeof(Vertex),
-                &g_pCommon->vertices[0], GL_STATIC_DRAW);
-		GL_CHECK_ERRORS;
-		//enable vertex attribute array for position
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,sizeof(Vertex), nullptr);
-		GL_CHECK_ERRORS;
-		//enable vertex attribute array for normals
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE,sizeof(Vertex),
-                          reinterpret_cast<const GLvoid*>(offsetof(Vertex, normal)));
-		GL_CHECK_ERRORS;
-		//pass cube indices to element array buffer
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_pCommon->cubeIndicesVBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, g_pCommon->indices.size()*sizeof(GLushort),
-                &g_pCommon->indices[0], GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, g_pCommon->cubeVerticesVBO);
+  // pass vertices to the buffer object
+  glBufferData(GL_ARRAY_BUFFER, g_pCommon->vertices.size() * sizeof(Vertex),
+               &g_pCommon->vertices[0], GL_STATIC_DRAW);
+  GL_CHECK_ERRORS;
+  // enable vertex attribute array for position
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
+  GL_CHECK_ERRORS;
+  // enable vertex attribute array for normals
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(
+      1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+      reinterpret_cast<const GLvoid *>(offsetof(Vertex, normal)));
+  GL_CHECK_ERRORS;
+  // pass cube indices to element array buffer
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_pCommon->cubeIndicesVBO);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+               g_pCommon->indices.size() * sizeof(GLushort),
+               &g_pCommon->indices[0], GL_STATIC_DRAW);
 
-	GL_CHECK_ERRORS;
+  GL_CHECK_ERRORS;
 
-	//clear the vertices and indices vectors as we will reuse them
-	//for plane
-	g_pCommon->vertices.clear();
-	g_pCommon->indices.clear();
-	//create a plane object
-	CreatePlane(100, 100, g_pCommon->vertices, g_pCommon->indices);
+  // clear the vertices and indices vectors as we will reuse them
+  // for plane
+  g_pCommon->vertices.clear();
+  g_pCommon->indices.clear();
+  // create a plane object
+  CreatePlane(100, 100, g_pCommon->vertices, g_pCommon->indices);
 
-	//setup plane VAO and VBO
-	glGenVertexArrays(1, &g_pCommon->planeVAOID);
-	glGenBuffers(1,      &g_pCommon->planeVerticesVBO);
-	glGenBuffers(1,      &g_pCommon->planeIndicesVBO);
-	glBindVertexArray(g_pCommon->planeVAOID);
+  // setup plane VAO and VBO
+  glGenVertexArrays(1, &g_pCommon->planeVAOID);
+  glGenBuffers(1, &g_pCommon->planeVerticesVBO);
+  glGenBuffers(1, &g_pCommon->planeIndicesVBO);
+  glBindVertexArray(g_pCommon->planeVAOID);
 
-		glBindBuffer(GL_ARRAY_BUFFER, g_pCommon->planeVerticesVBO);
-		//pass vertices to the buffer object
-		glBufferData(GL_ARRAY_BUFFER, g_pCommon->vertices.size() * sizeof(Vertex),
-                  &g_pCommon->vertices[0], GL_STATIC_DRAW);
-		GL_CHECK_ERRORS;
-		//enable vertex attribute array for position
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
-		GL_CHECK_ERRORS;
-		//enable vertex attribute array for normals
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE,sizeof(Vertex), reinterpret_cast<const GLvoid*>(offsetof(Vertex, normal)));
-		GL_CHECK_ERRORS;
-		//pass plane indices to element array buffer
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_pCommon->planeIndicesVBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, g_pCommon->indices.size() * sizeof(GLushort),
-                &g_pCommon->indices[0], GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, g_pCommon->planeVerticesVBO);
+  // pass vertices to the buffer object
+  glBufferData(GL_ARRAY_BUFFER, g_pCommon->vertices.size() * sizeof(Vertex),
+               &g_pCommon->vertices[0], GL_STATIC_DRAW);
+  GL_CHECK_ERRORS;
+  // enable vertex attribute array for position
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
+  GL_CHECK_ERRORS;
+  // enable vertex attribute array for normals
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(
+      1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+      reinterpret_cast<const GLvoid *>(offsetof(Vertex, normal)));
+  GL_CHECK_ERRORS;
+  // pass plane indices to element array buffer
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_pCommon->planeIndicesVBO);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+               g_pCommon->indices.size() * sizeof(GLushort),
+               &g_pCommon->indices[0], GL_STATIC_DRAW);
 
-	GL_CHECK_ERRORS;
+  GL_CHECK_ERRORS;
 
-	//setup vao and vbo stuff for the light position crosshair
-	glm::vec3 crossHairVertices[6];
-	crossHairVertices[0] = glm::vec3(-0.5f,0,0);
-	crossHairVertices[1] = glm::vec3(0.5f,0,0);
-	crossHairVertices[2] = glm::vec3(0, -0.5f,0);
-	crossHairVertices[3] = glm::vec3(0, 0.5f,0);
-	crossHairVertices[4] = glm::vec3(0,0, -0.5f);
-	crossHairVertices[5] = glm::vec3(0,0, 0.5f);
+  // setup vao and vbo stuff for the light position crosshair
+  glm::vec3 crossHairVertices[6];
+  crossHairVertices[0] = glm::vec3(-0.5f, 0, 0);
+  crossHairVertices[1] = glm::vec3(0.5f, 0, 0);
+  crossHairVertices[2] = glm::vec3(0, -0.5f, 0);
+  crossHairVertices[3] = glm::vec3(0, 0.5f, 0);
+  crossHairVertices[4] = glm::vec3(0, 0, -0.5f);
+  crossHairVertices[5] = glm::vec3(0, 0, 0.5f);
 
-	//setup light gizmo vertex array and buffer object
-	glGenVertexArrays(1, &g_pCommon->lightVAOID);
-	glGenBuffers(1,      &g_pCommon->lightVerticesVBO);
-	glBindVertexArray(g_pCommon->lightVAOID);
+  // setup light gizmo vertex array and buffer object
+  glGenVertexArrays(1, &g_pCommon->lightVAOID);
+  glGenBuffers(1, &g_pCommon->lightVerticesVBO);
+  glBindVertexArray(g_pCommon->lightVAOID);
 
-		glBindBuffer(GL_ARRAY_BUFFER, g_pCommon->lightVerticesVBO);
-		//pass light crosshair gizmo vertices to buffer object
-		glBufferData(GL_ARRAY_BUFFER, sizeof(crossHairVertices), &(crossHairVertices[0].x),
-                GL_STATIC_DRAW);
-		GL_CHECK_ERRORS;
-		//enable vertex attribute array for position
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+  glBindBuffer(GL_ARRAY_BUFFER, g_pCommon->lightVerticesVBO);
+  // pass light crosshair gizmo vertices to buffer object
+  glBufferData(GL_ARRAY_BUFFER, sizeof(crossHairVertices),
+               &(crossHairVertices[0].x), GL_STATIC_DRAW);
+  GL_CHECK_ERRORS;
+  // enable vertex attribute array for position
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
-	GL_CHECK_ERRORS;
+  GL_CHECK_ERRORS;
 
-	//get light position from spherical coordinates
-	g_pCommon->lightPosOS.x = g_pCommon->radius * std::cos(g_pCommon->theta) * std::sin(g_pCommon->phi);
-	g_pCommon->lightPosOS.y = g_pCommon->radius * std::cos(g_pCommon->phi);
-	g_pCommon->lightPosOS.z = g_pCommon->radius * std::sin(g_pCommon->theta) * std::sin(g_pCommon->phi);
+  // get light position from spherical coordinates
+  g_pCommon->lightPosOS.x =
+      g_pCommon->radius * std::cos(g_pCommon->theta) * std::sin(g_pCommon->phi);
+  g_pCommon->lightPosOS.y = g_pCommon->radius * std::cos(g_pCommon->phi);
+  g_pCommon->lightPosOS.z =
+      g_pCommon->radius * std::sin(g_pCommon->theta) * std::sin(g_pCommon->phi);
 
-	//setup the shadowmap texture
-	glGenTextures(1, &g_pCommon->shadowMapTexID);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, g_pCommon->shadowMapTexID);
+  // setup the shadowmap texture
+  glGenTextures(1, &g_pCommon->shadowMapTexID);
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, g_pCommon->shadowMapTexID);
 
-	//set texture parameters
-	GLfloat border[4]={1,0,0,0};
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_COMPARE_MODE,GL_COMPARE_REF_TO_TEXTURE);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_COMPARE_FUNC,GL_LEQUAL);
-	glTexParameterfv(GL_TEXTURE_2D,GL_TEXTURE_BORDER_COLOR,border);
-	glTexImage2D(GL_TEXTURE_2D,0,GL_DEPTH_COMPONENT24, Common::SHADOWMAP_WIDTH,
-               Common::SHADOWMAP_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, nullptr);
+  // set texture parameters
+  GLfloat border[4] = {1, 0, 0, 0};
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE,
+                  GL_COMPARE_REF_TO_TEXTURE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+  glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, Common::SHADOWMAP_WIDTH,
+               Common::SHADOWMAP_HEIGHT, 0, GL_DEPTH_COMPONENT,
+               GL_UNSIGNED_BYTE, nullptr);
 
-	//set up FBO to get the depth component
-	glGenFramebuffers(1, &g_pCommon->fboID);
-	glBindFramebuffer(GL_FRAMEBUFFER, g_pCommon->fboID);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
-                         g_pCommon->shadowMapTexID,0);
+  // set up FBO to get the depth component
+  glGenFramebuffers(1, &g_pCommon->fboID);
+  glBindFramebuffer(GL_FRAMEBUFFER, g_pCommon->fboID);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
+                         g_pCommon->shadowMapTexID, 0);
 
-	// Check framebuffer completeness status
-	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	if(status == GL_FRAMEBUFFER_COMPLETE) {
-    std::cout << "FBO setup successful."<< std::endl;
-	} else {
-		std::cout << "Problem in FBO setup." << std::endl;
-	}
+  // Check framebuffer completeness status
+  GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+  if (status == GL_FRAMEBUFFER_COMPLETE) {
+    std::cout << "FBO setup successful." << std::endl;
+  } else {
+    std::cout << "Problem in FBO setup." << std::endl;
+  }
 
-	//unbind FBO
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  // unbind FBO
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	//set the light MV, P and bias matrices
-	g_pCommon->MV_L = glm::lookAt(g_pCommon->lightPosOS, glm::vec3(0,0,0),
-                                glm::vec3(0,1,0));
-	g_pCommon->P_L  = glm::perspective(50.0f, 1.0f, 1.0f, 25.0f);
-	g_pCommon->B    = glm::scale(glm::translate(glm::mat4(1), glm::vec3(0.5, 0.5, 0.5)),
-                               glm::vec3(0.5,0.5,0.5));
-	g_pCommon->BP   = g_pCommon->B * g_pCommon->P_L;
-	g_pCommon->S    = g_pCommon->BP * g_pCommon->MV_L;
+  // set the light MV, P and bias matrices
+  g_pCommon->MV_L = glm::lookAt(g_pCommon->lightPosOS, glm::vec3(0, 0, 0),
+                                glm::vec3(0, 1, 0));
+  g_pCommon->P_L = glm::perspective(50.0f, 1.0f, 1.0f, 25.0f);
+  g_pCommon->B =
+      glm::scale(glm::translate(glm::mat4(1), glm::vec3(0.5, 0.5, 0.5)),
+                 glm::vec3(0.5, 0.5, 0.5));
+  g_pCommon->BP = g_pCommon->B * g_pCommon->P_L;
+  g_pCommon->S = g_pCommon->BP * g_pCommon->MV_L;
 
-	//enable depth testing and culling
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
+  // enable depth testing and culling
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_CULL_FACE);
 
-  std::cout << "Initialization successfull" << std::endl;  
+  std::cout << "Initialization successfull" << std::endl;
 }
 
 // Release all allocated resources
@@ -527,120 +551,141 @@ void OnIdle() { glutPostRedisplay(); }
 
 // Scene rendering function
 void DrawScene(glm::mat4 View, glm::mat4 Proj, int isLightPass = 1) {
-	GL_CHECK_ERRORS;
+  GL_CHECK_ERRORS;
 
-	//bind the current shader
-	g_pCommon->shader.Use();
-	//render plane first
-	glBindVertexArray(g_pCommon->planeVAOID); {
-		//set the shader uniforms
-		glUniform3fv(g_pCommon->shader("light_position"),1, &(g_pCommon->lightPosOS.x));
-		glUniformMatrix4fv(g_pCommon->shader("S"), 1, GL_FALSE, glm::value_ptr(g_pCommon->S));
-		glUniformMatrix4fv(g_pCommon->shader("M"), 1, GL_FALSE, glm::value_ptr(glm::mat4(1)));
-		glUniform1i(g_pCommon->shader("bIsLightPass"), isLightPass);		
-		glUniformMatrix4fv(g_pCommon->shader("MVP"), 1, GL_FALSE, glm::value_ptr(Proj*View));
-		glUniformMatrix4fv(g_pCommon->shader("MV"), 1, GL_FALSE, glm::value_ptr(View));
-		glUniformMatrix3fv(g_pCommon->shader("N"), 1, GL_FALSE, glm::value_ptr(glm::inverseTranspose(glm::mat3(View))));
-		glUniform3f(g_pCommon->shader("diffuse_color"), 1.0f,1.0f,1.0f);
-			//draw plane triangles
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-	}
+  // bind the current shader
+  g_pCommon->shader.Use();
+  // render plane first
+  glBindVertexArray(g_pCommon->planeVAOID);
+  {
+    // set the shader uniforms
+    glUniform3fv(g_pCommon->shader("light_position"), 1,
+                 &(g_pCommon->lightPosOS.x));
+    glUniformMatrix4fv(g_pCommon->shader("S"), 1, GL_FALSE,
+                       glm::value_ptr(g_pCommon->S));
+    glUniformMatrix4fv(g_pCommon->shader("M"), 1, GL_FALSE,
+                       glm::value_ptr(glm::mat4(1)));
+    glUniform1i(g_pCommon->shader("bIsLightPass"), isLightPass);
+    glUniformMatrix4fv(g_pCommon->shader("MVP"), 1, GL_FALSE,
+                       glm::value_ptr(Proj * View));
+    glUniformMatrix4fv(g_pCommon->shader("MV"), 1, GL_FALSE,
+                       glm::value_ptr(View));
+    glUniformMatrix3fv(g_pCommon->shader("N"), 1, GL_FALSE,
+                       glm::value_ptr(glm::inverseTranspose(glm::mat3(View))));
+    glUniform3f(g_pCommon->shader("diffuse_color"), 1.0f, 1.0f, 1.0f);
+    // draw plane triangles
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
+  }
 
-	//render the cube 
-	glBindVertexArray(g_pCommon->cubeVAOID); {
-		//set the cube's transform
-		glm::mat4 T = glm::translate(glm::mat4(1),  glm::vec3(-1,1,0));
-		glm::mat4 M = T;
-		glm::mat4 MV = View*M;
-		glm::mat4 MVP = Proj*MV;
-		//pass shader uniforms
-		glUniformMatrix4fv(g_pCommon->shader("S"), 1, GL_FALSE, glm::value_ptr(g_pCommon->S));
-		glUniformMatrix4fv(g_pCommon->shader("M"), 1, GL_FALSE, glm::value_ptr(M));
-		glUniformMatrix4fv(g_pCommon->shader("MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
-		glUniformMatrix4fv(g_pCommon->shader("MV"), 1, GL_FALSE, glm::value_ptr(MV));
-		glUniformMatrix3fv(g_pCommon->shader("N"), 1, GL_FALSE, glm::value_ptr(glm::inverseTranspose(glm::mat3(MV))));
-		glUniform3f(g_pCommon->shader("diffuse_color"), 1.0f,0.0f,0.0f);
-			//draw cube triangles
-	 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, nullptr);
-	}
-	//render the sphere
-	glBindVertexArray(g_pCommon->sphereVAOID); {
-		//set the sphere's transform
-		glm::mat4 T = glm::translate(glm::mat4(1), glm::vec3(1,1,0));
-		glm::mat4 M = T;
-		glm::mat4 MV = View*M;
-		glm::mat4 MVP = Proj*MV;
-		//set the shader uniforms
-		glUniformMatrix4fv(g_pCommon->shader("S"), 1, GL_FALSE, glm::value_ptr(g_pCommon->S));
-		glUniformMatrix4fv(g_pCommon->shader("M"), 1, GL_FALSE, glm::value_ptr(M));
-		glUniformMatrix4fv(g_pCommon->shader("MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
-		glUniformMatrix4fv(g_pCommon->shader("MV"), 1, GL_FALSE, glm::value_ptr(MV));
-		glUniformMatrix3fv(g_pCommon->shader("N"), 1, GL_FALSE, glm::value_ptr(glm::inverseTranspose(glm::mat3(MV))));
-		glUniform3f(g_pCommon->shader("diffuse_color"), 0.0f, 0.0f, 1.0f);
-			//draw sphere triangles
-	 		glDrawElements(GL_TRIANGLES, g_pCommon->totalSphereTriangles, GL_UNSIGNED_SHORT, nullptr);
-	}
+  // render the cube
+  glBindVertexArray(g_pCommon->cubeVAOID);
+  {
+    // set the cube's transform
+    glm::mat4 T = glm::translate(glm::mat4(1), glm::vec3(-1, 1, 0));
+    glm::mat4 M = T;
+    glm::mat4 MV = View * M;
+    glm::mat4 MVP = Proj * MV;
+    // pass shader uniforms
+    glUniformMatrix4fv(g_pCommon->shader("S"), 1, GL_FALSE,
+                       glm::value_ptr(g_pCommon->S));
+    glUniformMatrix4fv(g_pCommon->shader("M"), 1, GL_FALSE, glm::value_ptr(M));
+    glUniformMatrix4fv(g_pCommon->shader("MVP"), 1, GL_FALSE,
+                       glm::value_ptr(MVP));
+    glUniformMatrix4fv(g_pCommon->shader("MV"), 1, GL_FALSE,
+                       glm::value_ptr(MV));
+    glUniformMatrix3fv(g_pCommon->shader("N"), 1, GL_FALSE,
+                       glm::value_ptr(glm::inverseTranspose(glm::mat3(MV))));
+    glUniform3f(g_pCommon->shader("diffuse_color"), 1.0f, 0.0f, 0.0f);
+    // draw cube triangles
+    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, nullptr);
+  }
+  // render the sphere
+  glBindVertexArray(g_pCommon->sphereVAOID);
+  {
+    // set the sphere's transform
+    glm::mat4 T = glm::translate(glm::mat4(1), glm::vec3(1, 1, 0));
+    glm::mat4 M = T;
+    glm::mat4 MV = View * M;
+    glm::mat4 MVP = Proj * MV;
+    // set the shader uniforms
+    glUniformMatrix4fv(g_pCommon->shader("S"), 1, GL_FALSE,
+                       glm::value_ptr(g_pCommon->S));
+    glUniformMatrix4fv(g_pCommon->shader("M"), 1, GL_FALSE, glm::value_ptr(M));
+    glUniformMatrix4fv(g_pCommon->shader("MVP"), 1, GL_FALSE,
+                       glm::value_ptr(MVP));
+    glUniformMatrix4fv(g_pCommon->shader("MV"), 1, GL_FALSE,
+                       glm::value_ptr(MV));
+    glUniformMatrix3fv(g_pCommon->shader("N"), 1, GL_FALSE,
+                       glm::value_ptr(glm::inverseTranspose(glm::mat3(MV))));
+    glUniform3f(g_pCommon->shader("diffuse_color"), 0.0f, 0.0f, 1.0f);
+    // draw sphere triangles
+    glDrawElements(GL_TRIANGLES, g_pCommon->totalSphereTriangles,
+                   GL_UNSIGNED_SHORT, nullptr);
+  }
 
-	//unbind shader
-	g_pCommon->shader.UnUse();
+  // unbind shader
+  g_pCommon->shader.UnUse();
 
-	GL_CHECK_ERRORS;
+  GL_CHECK_ERRORS;
 }
 
 // display callback function
 void OnRender() {
-	GL_CHECK_ERRORS;
+  GL_CHECK_ERRORS;
 
-	//clear colour and depth buffers
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  // clear colour and depth buffers
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//set the camera transform
-	glm::mat4 T  = glm::translate(glm::mat4(1.0f),glm::vec3(0.0f, 0.0f, g_pCommon->dist));
-	glm::mat4 Rx = glm::rotate(T,  g_pCommon->rX, glm::vec3(1.0f, 0.0f, 0.0f));
-	glm::mat4 MV = glm::rotate(Rx, g_pCommon->rY, glm::vec3(0.0f, 1.0f, 0.0f));
-	 
-	//1) Render scene from the light's POV
-	//enable rendering to FBO
- 	glBindFramebuffer(GL_FRAMEBUFFER, g_pCommon->fboID);
-	//clear depth buffer
-	glClear(GL_DEPTH_BUFFER_BIT);
-	//reset viewport to the shadow map texture size
-	glViewport(0, 0, Common::SHADOWMAP_WIDTH, Common::SHADOWMAP_HEIGHT);
-	
-	//enable front face culling
-	glCullFace(GL_FRONT);
-		//draw scene from the point of view of light
-		DrawScene(g_pCommon->MV_L, g_pCommon->P_L);
-	//enable back face culling
-	glCullFace(GL_BACK);
+  // set the camera transform
+  glm::mat4 T =
+      glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, g_pCommon->dist));
+  glm::mat4 Rx = glm::rotate(T, g_pCommon->rX, glm::vec3(1.0f, 0.0f, 0.0f));
+  glm::mat4 MV = glm::rotate(Rx, g_pCommon->rY, glm::vec3(0.0f, 1.0f, 0.0f));
 
-	//restore normal rendering path
-	//unbind FBO, set the default back buffer and reset the viewport to screen size
-	glBindFramebuffer(GL_FRAMEBUFFER,0);
-	glDrawBuffer(GL_BACK_LEFT);
-	glViewport(0, 0, Common::WIDTH, Common::HEIGHT);
+  // 1) Render scene from the light's POV
+  // enable rendering to FBO
+  glBindFramebuffer(GL_FRAMEBUFFER, g_pCommon->fboID);
+  // clear depth buffer
+  glClear(GL_DEPTH_BUFFER_BIT);
+  // reset viewport to the shadow map texture size
+  glViewport(0, 0, Common::SHADOWMAP_WIDTH, Common::SHADOWMAP_HEIGHT);
 
-	//2) Render scene from point of view of eye
-	DrawScene(MV, g_pCommon->P, 0);
+  // enable front face culling
+  glCullFace(GL_FRONT);
+  // draw scene from the point of view of light
+  DrawScene(g_pCommon->MV_L, g_pCommon->P_L);
+  // enable back face culling
+  glCullFace(GL_BACK);
 
-	//bind light gizmo vertex array object
-	glBindVertexArray(g_pCommon->lightVAOID); {
-		//set the flat shader
-		g_pCommon->flatshader.Use();
-			//set the light's transform and render 3 lines
-			auto T_ = glm::translate(glm::mat4(1), g_pCommon->lightPosOS);
-			glUniformMatrix4fv(g_pCommon->flatshader("MVP"), 1, GL_FALSE,
-                         glm::value_ptr(g_pCommon->P * MV * T_));
-				glDrawArrays(GL_LINES, 0, 6);
-		//unbind shader
-		g_pCommon->flatshader.UnUse();
-	}
-		
-	//unbind the vertex array object
-	glBindVertexArray(0);	
+  // restore normal rendering path
+  // unbind FBO, set the default back buffer and reset the viewport to screen
+  // size
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glDrawBuffer(GL_BACK_LEFT);
+  glViewport(0, 0, Common::WIDTH, Common::HEIGHT);
 
-	//swap front and back buffers to show the rendered result
-	glutSwapBuffers();
+  // 2) Render scene from point of view of eye
+  DrawScene(MV, g_pCommon->P, 0);
+
+  // bind light gizmo vertex array object
+  glBindVertexArray(g_pCommon->lightVAOID);
+  {
+    // set the flat shader
+    g_pCommon->flatshader.Use();
+    // set the light's transform and render 3 lines
+    auto T_ = glm::translate(glm::mat4(1), g_pCommon->lightPosOS);
+    glUniformMatrix4fv(g_pCommon->flatshader("MVP"), 1, GL_FALSE,
+                       glm::value_ptr(g_pCommon->P * MV * T_));
+    glDrawArrays(GL_LINES, 0, 6);
+    // unbind shader
+    g_pCommon->flatshader.UnUse();
+  }
+
+  // unbind the vertex array object
+  glBindVertexArray(0);
+
+  // swap front and back buffers to show the rendered result
+  glutSwapBuffers();
 }
 
 int main(int argc, char **argv) {
@@ -669,9 +714,9 @@ int main(int argc, char **argv) {
 
   // output hardware information
   std::cout << "\tUsing GLEW " << glewGetString(GLEW_VERSION) << std::endl;
-  std::cout << "\tVendor: "    << glGetString(GL_VENDOR)      << std::endl;
-  std::cout << "\tRenderer: "  << glGetString(GL_RENDERER)    << std::endl;
-  std::cout << "\tVersion: "   << glGetString(GL_VERSION)     << std::endl;
+  std::cout << "\tVendor: " << glGetString(GL_VENDOR) << std::endl;
+  std::cout << "\tRenderer: " << glGetString(GL_RENDERER) << std::endl;
+  std::cout << "\tVersion: " << glGetString(GL_VERSION) << std::endl;
   std::cout << "\tGLSL: " << glGetString(GL_SHADING_LANGUAGE_VERSION)
             << std::endl;
   GL_CHECK_ERRORS;
