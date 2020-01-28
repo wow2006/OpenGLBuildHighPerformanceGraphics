@@ -1,3 +1,4 @@
+# ${CMAKE_SOURCE_DIR}/Module1/CMakeLists.txt
 set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL REQUIRED)
 find_package(GLUT   REQUIRED)
@@ -12,3 +13,5 @@ add_subdirectory(Chapter03)
 add_subdirectory(Chapter04)
 add_subdirectory(Chapter05)
 add_subdirectory(Chapter06)
+#add_subdirectory(Chapter07)
+add_subdirectory(Chapter08)

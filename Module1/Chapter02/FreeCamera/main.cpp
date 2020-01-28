@@ -109,12 +109,14 @@ void OnMouseMove(int x, int y) {
   } else {
     g_pCommon->rY += (y - g_pCommon->oldY) / 5.0f;
     g_pCommon->rX += (g_pCommon->oldX - x) / 5.0f;
-    if (g_pCommon->useFiltering)
+
+    if (g_pCommon->useFiltering) {
       filterMouseMoves(g_pCommon->rX, g_pCommon->rY);
-    else {
+    } else {
       g_pCommon->mouseX = g_pCommon->rX;
       g_pCommon->mouseY = g_pCommon->rY;
     }
+
     g_pCommon->cam.Rotate(g_pCommon->mouseX, g_pCommon->mouseY, 0);
   }
   g_pCommon->oldX = x;
