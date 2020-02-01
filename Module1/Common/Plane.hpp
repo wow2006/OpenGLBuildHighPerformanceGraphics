@@ -16,6 +16,6 @@ public:
 
   float GetDistance(const glm::vec3 &p);
 
-  glm::vec3 N;
-  float d;
+  glm::vec3 N = {0, 1, 0};
+  float d = 0.F;
 };

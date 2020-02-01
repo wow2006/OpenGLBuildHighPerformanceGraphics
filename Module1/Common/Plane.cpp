@@ -4,10 +4,7 @@
 
 const float EPSILON = 0.0001f;
 
-CPlane::CPlane() {
-  N = glm::vec3(0, 1, 0);
-  d = 0;
-}
+CPlane::CPlane() = default;
 
 CPlane::CPlane(const glm::vec3 &normal, const glm::vec3 &p) {
   N = normal;

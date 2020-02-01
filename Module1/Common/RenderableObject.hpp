@@ -1,8 +1,7 @@
 #pragma once
 #include "GLSLShader.hpp"
 
-class RenderableObject
-{
+class RenderableObject {
 public:
 	RenderableObject();
 

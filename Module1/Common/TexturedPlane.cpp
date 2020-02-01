@@ -35,15 +35,14 @@ void CTexturedPlane::FillVertexBuffer(GLfloat *pBuffer) {
   int width_2 = width / 2;
   int depth_2 = depth / 2;
 
-  vertices[0] = glm::vec3(-width_2, 0, -depth_2);
-  vertices[1] = glm::vec3(width_2, 0, -depth_2);
+  vertices[0] = glm::vec3(-width_2, 0,-depth_2);
+  vertices[1] = glm::vec3( width_2, 0,-depth_2);
 
-  vertices[2] = glm::vec3(width_2, 0, depth_2);
+  vertices[2] = glm::vec3( width_2, 0, depth_2);
   vertices[3] = glm::vec3(-width_2, 0, depth_2);
 }
 
 void CTexturedPlane::FillIndexBuffer(GLuint *pBuffer) {
-
   // fill indices array
   GLuint *id = pBuffer;
   *id++ = 0;

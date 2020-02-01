@@ -2,17 +2,15 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "AbstractCamera.hpp"
 
-CAbstractCamera::CAbstractCamera() : Znear{0.1f}, Zfar{1000.f} {}
-
 CAbstractCamera::~CAbstractCamera() = default;
 
-void CAbstractCamera::SetupProjection(const float fovy, const float aspRatio,
-                                      const float nr, const float fr) {
-  P            = glm::perspective(fovy, aspRatio, nr, fr);
-  Znear        = nr;
-  Zfar         = fr;
-  fov          = fovy;
-  aspect_ratio = aspRatio;
+void CAbstractCamera::SetupProjection(const float fovy_, const float aspRatio_,
+                                      const float nr_, const float fr_) {
+  P            = glm::perspective(fovy_, aspRatio_, nr_, fr_);
+  Znear        = nr_;
+  Zfar         = fr_;
+  fov          = fovy_;
+  aspect_ratio = aspRatio_;
 }
 
 void CAbstractCamera::Rotate(const float y, const float p, const float r) {

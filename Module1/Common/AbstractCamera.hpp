@@ -7,11 +7,6 @@
 class CAbstractCamera {
 public:
   /**
-   * @brief Default constructor
-   */
-  CAbstractCamera();
-
-  /**
    * @brief Default destructor
    */
   virtual ~CAbstractCamera();
@@ -30,11 +25,11 @@ public:
   virtual void Update() = 0;
 
   /**
-  * @brief Rotate camera view using eular rotation.
+  * @brief Rotate camera view using Euler Angles.
   *
-  * @param yaw
-  * @param pitch
-  * @param roll
+  * @param yaw Heading (Y-Roll)
+  * @param pitch (X-Roll)
+  * @param roll (Z-Roll)
   */
   virtual void Rotate(const float yaw, const float pitch, const float roll);
 
@@ -70,7 +65,7 @@ public:
 protected:
   const glm::vec3 UP = glm::vec3{0, 1, 0};
 
-  float yaw, pitch, roll, fov, aspect_ratio, Znear, Zfar;
+  float yaw, pitch, roll, fov, aspect_ratio, Znear = 0.1F, Zfar = 1000.F;
 
   glm::vec3 look;
   glm::vec3 up;
