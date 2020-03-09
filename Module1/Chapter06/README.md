@@ -4,6 +4,6 @@
 2. [DualDepthPeeling](DualDepthPeeling/README.md)     `DONE`
 3. [SSAO](SSAO/README.md)                             `DONE`
 4. [SphericalHarmonics](SphericalHarmonics/README.md) `DONE`
-5. [GPURaytracing](GPURaytracing/README.md)           `TODO`
-6. [GPUPathtracing](GPUPathtracing/README.md)         `TODO`
+5. [GPURaytracing](GPURaytracing/README.md)           `DONE`
+6. [GPUPathtracing](GPUPathtracing/README.md)         `DONE`
 
