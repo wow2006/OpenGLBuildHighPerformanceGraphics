@@ -5,7 +5,8 @@
 2. Chapter 2: 3D Viewing and Object Picking `Done`
 3. Chapter 3: Offscreen Rendering and Environment Mapping `Done`
 4. Chapter 4: Lights and Shadows `Done`
-5. Chapter 5: GPU-based Alpha Blending and Global Illumination `WIP`
-6. Chapter 6: GPU-based Alpha Blending and Global Illumination
-7. Chapter 7: GPU-based Volume Rendering Techniques
-8. Chapter 8: Skeletal and Physically-based Simulation on the GPU
+5. Chapter 5: Mesh Model Formats and Particle Systems `Done`
+6. Chapter 6: GPU-based Alpha Blending and Global Illumination `TODO`
+7. Chapter 7: GPU-based Volume Rendering Techniques `TODO`
+8. Chapter 8: Skeletal and Physically-based Simulation on the GPU `TODO`
+
