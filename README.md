@@ -10,7 +10,7 @@ This book split to three modules
 
 ### Dependies:
 - OpenGL
-- GLUT `It will be replaced with SDL2`
+- GLUT `It will be replaced with GL3W`
 - GLEW `It will be replaced with gl3d`
 - GLM   
 - SOIL `It will be replaced with stb`
