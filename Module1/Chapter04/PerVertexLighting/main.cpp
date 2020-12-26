@@ -1,21 +1,25 @@
-#include <GL/glew.h>
-
-#include <iostream>
-#include <vector>
+// STL
 #include <cmath>
-
-#include <GL/freeglut.h>
-
+#include <vector>
+#include <iostream>
+// GL
+#include <GL/glew.h>
+// GLFW
+#include <GLFW/glfw3.h>
+// ImGui
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+// glm
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
-#include "Grid.hpp"
+// Internal
 #include "GLSLShader.hpp"
+#include "Grid.hpp"
 
 #define GL_CHECK_ERRORS assert(glGetError() == GL_NO_ERROR)
-
 
 // Vertex struct with position and normal
 struct Vertex {
@@ -23,10 +27,17 @@ struct Vertex {
   glm::vec3 normal;
 };
 
+enum State {
+  None = 0, Left, Middle, Right
+};
+
 struct Common {
   // screen size
   static constexpr int WIDTH = 1024;
   static constexpr int HEIGHT = 768;
+
+  float MouseDeltaX = 0.001F;
+  float MouseDeltaY = 0.001F;
 
   // per-vertex lighting shader
   GLSLShader shader;
@@ -45,13 +56,17 @@ struct Common {
   GLuint cubeIndicesVBO;
 
   // projection, modelview and rotation matrices
-  glm::mat4 P  = glm::mat4(1);
+  glm::mat4 P = glm::mat4(1);
   glm::mat4 MV = glm::mat4(1);
   glm::mat4 Rot;
 
   // camera transformation variables
-  int state = 0, oldX = 0, oldY = 0;
-  float rX = 56.f, rY = -44.f, dist = -5.f;
+  State state = State::None;
+  int oldX = 0;
+  int oldY = 0;
+  float rX = 45.F;
+  float rY = 45.F;
+  float dist =-20.F;
 
   // Grid object
   CGrid *grid = nullptr;
@@ -67,18 +82,16 @@ struct Common {
   int totalSphereTriangles = 0;
 
   // constant colours for cubes
-  glm::vec3 colors[8] = {
-    glm::vec3(1, 0, 0), glm::vec3(0, 1, 0),
-    glm::vec3(0, 0, 1), glm::vec3(1, 1, 0),
-    glm::vec3(1, 0, 1), glm::vec3(0, 1, 1),
-    glm::vec3(1, 1, 1), glm::vec3(0.5, 0.5, 0.5)
-  };
+  glm::vec3 colors[8] = {glm::vec3(1, 0, 0), glm::vec3(0, 1, 0),
+                         glm::vec3(0, 0, 1), glm::vec3(1, 1, 0),
+                         glm::vec3(1, 0, 1), glm::vec3(0, 1, 1),
+                         glm::vec3(1, 1, 1), glm::vec3(0.5, 0.5, 0.5)};
 };
 static Common *g_pCommon = nullptr;
 
 // add the given sphere indices to the indices vector
 inline void push_indices(int sectors, int r, int s,
-    std::vector<GLushort> &indices) {
+                         std::vector<GLushort> &indices) {
   int curRow = r * sectors;
   int nextRow = (r + 1) * sectors;
 
@@ -93,34 +106,29 @@ inline void push_indices(int sectors, int r, int s,
 
 // Generates a sphere primitive with the given radius, slices and stacks
 void CreateSphere(float radius, unsigned int slices, unsigned int stacks,
-    std::vector<Vertex> &vertices,
-    std::vector<GLushort> &indices) {
-  (void)radius;
-  (void)slices;
-  (void)stacks;
-  (void)vertices;
-  (void)indices;
-  //float const R = 1.0f / (float)(slices - 1);
-  //float const S = 1.0f / (float)(stacks - 1);
+                  std::vector<Vertex> &vertices,
+                  std::vector<GLushort> &indices) {
+   float const R = 1.0f / static_cast<float>(slices - 1);
+   float const S = 1.0f / static_cast<float>(stacks - 1);
 
-  //for (size_t r = 0; r < slices; ++r) {
-  //  for (size_t s = 0; s < stacks; ++s) {
-  //    float const y = (float)(sin(-M_PI_2 + M_PI * r * R));
-  //    float const x = (float)(cos(2 * M_PI * s * S) * sin(M_PI * r * R));
-  //    float const z = (float)(sin(2 * M_PI * s * S) * sin(M_PI * r * R));
+   for(int r = 0; r < slices; ++r) {
+    for(int s = 0; s < stacks; ++s) {
+      float const y = static_cast<float>(sin(-M_PI_2 + glm::pi<float>() * r * R));
+      float const x = static_cast<float>(cos(2.F * glm::pi<float>() * s * S) * sin(glm::pi<float>() * r * R));
+      float const z = static_cast<float>(sin(2.F * glm::pi<float>() * s * S) * sin(glm::pi<float>() * r * R));
 
-  //    Vertex v;
-  //    v.pos = glm::vec3(x, y, z) * radius;
-  //    v.normal = glm::normalize(v.pos);
-  //    vertices.push_back(v);
-  //    push_indices(stacks, r, s, indices);
-  //  }
-  //}
+      Vertex v;
+      v.pos = glm::vec3(x, y, z) * radius;
+      v.normal = glm::normalize(v.pos);
+      vertices.push_back(v);
+      push_indices(static_cast<int>(stacks), r, s, indices);
+    }
+  }
 }
 
 // Generates a cube of the given size
 void CreateCube(const float &size, std::vector<Vertex> &vertices,
-    std::vector<GLushort> &indices) {
+                std::vector<GLushort> &indices) {
   float halfSize = size / 2.0f;
   glm::vec3 positions[8];
   positions[0] = glm::vec3(-halfSize, -halfSize, -halfSize);
@@ -199,39 +207,13 @@ void CreateCube(const float &size, std::vector<Vertex> &vertices,
   }
 }
 
-// Mouse click handler
-void OnMouseDown(int button, int s, int x, int y) {
-  if (s == GLUT_DOWN) {
-    g_pCommon->oldX = x;
-    g_pCommon->oldY = y;
-  }
-
-  if (button == GLUT_MIDDLE_BUTTON) {
-    g_pCommon->state = 0;
-  } else {
-    g_pCommon->state = 1;
-  }
-}
-
-// Mouse move handler
-void OnMouseMove(int x, int y) {
-  if (g_pCommon->state == 0) {
-    g_pCommon->dist *= (1 + (y - g_pCommon->oldY) / 60.0f);
-  } else {
-    g_pCommon->rY += (x - g_pCommon->oldX) / 5.0f;
-    g_pCommon->rX += (y - g_pCommon->oldY) / 5.0f;
-  }
-  g_pCommon->oldX = x;
-  g_pCommon->oldY = y;
-
-  glutPostRedisplay();
-}
-
 // OpenGL initialization
 void OnInit() {
   // load the per-vertex lighting shader
-  g_pCommon->shader.LoadFromFile(GL_VERTEX_SHADER,   "shaders/perVertexLighting.vert");
-  g_pCommon->shader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/perVertexLighting.frag");
+  g_pCommon->shader.LoadFromFile(GL_VERTEX_SHADER,
+                                 "shaders/perVertexLighting.vert");
+  g_pCommon->shader.LoadFromFile(GL_FRAGMENT_SHADER,
+                                 "shaders/perVertexLighting.frag");
   // compile and link shader
   g_pCommon->shader.CreateAndLinkProgram();
   g_pCommon->shader.Use();
@@ -262,19 +244,21 @@ void OnInit() {
   glBufferData(GL_ARRAY_BUFFER, g_pCommon->vertices.size() * sizeof(Vertex),
                &g_pCommon->vertices[0], GL_STATIC_DRAW);
   GL_CHECK_ERRORS;
-    // enable vertex attribute array for position
-    glEnableVertexAttribArray(0);
+  // enable vertex attribute array for position
+  glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
   GL_CHECK_ERRORS;
-    // enable vertex attribute array for normal
-    glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+  // enable vertex attribute array for normal
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(
+      1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
       reinterpret_cast<const GLvoid *>(offsetof(Vertex, normal)));
   GL_CHECK_ERRORS;
 
   // pass sphere indices to element array buffer
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_pCommon->sphereIndicesVBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, g_pCommon->indices.size() * sizeof(GLushort),
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+               g_pCommon->indices.size() * sizeof(GLushort),
                &g_pCommon->indices[0], GL_STATIC_DRAW);
 
   // store the total number of sphere triangles
@@ -290,8 +274,8 @@ void OnInit() {
 
   // setup cube vao and vbo stuff
   glGenVertexArrays(1, &g_pCommon->cubeVAOID);
-  glGenBuffers(1,      &g_pCommon->cubeVerticesVBO);
-  glGenBuffers(1,      &g_pCommon->cubeIndicesVBO);
+  glGenBuffers(1, &g_pCommon->cubeVerticesVBO);
+  glGenBuffers(1, &g_pCommon->cubeIndicesVBO);
   glBindVertexArray(g_pCommon->cubeVAOID);
 
   glBindBuffer(GL_ARRAY_BUFFER, g_pCommon->cubeVerticesVBO);
@@ -307,14 +291,16 @@ void OnInit() {
 
   // enable vertex attribut array for normal
   glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+  glVertexAttribPointer(
+      1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
       reinterpret_cast<const GLvoid *>(offsetof(Vertex, normal)));
   GL_CHECK_ERRORS;
 
   // pass cube indices to element array buffer
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_pCommon->cubeIndicesVBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, g_pCommon->indices.size() * sizeof(GLushort),
-      &g_pCommon->indices[0], GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+               g_pCommon->indices.size() * sizeof(GLushort),
+               &g_pCommon->indices[0], GL_STATIC_DRAW);
   GL_CHECK_ERRORS;
 
   // enable depth testing and culling
@@ -328,37 +314,6 @@ void OnInit() {
 
   std::cout << "Initialization successfull" << std::endl;
 }
-
-// release all allocated resources
-void OnShutdown() {
-  // Destroy shader
-  g_pCommon->shader.DeleteShaderProgram();
-  // Destroy vao and vbo
-  glDeleteBuffers(1,      &g_pCommon->sphereVerticesVBO);
-  glDeleteBuffers(1,      &g_pCommon->sphereIndicesVBO);
-  glDeleteVertexArrays(1, &g_pCommon->sphereVAOID);
-
-  glDeleteBuffers(1,      &g_pCommon->cubeVerticesVBO);
-  glDeleteBuffers(1,      &g_pCommon->cubeIndicesVBO);
-  glDeleteVertexArrays(1, &g_pCommon->cubeVAOID);
-
-  delete g_pCommon->grid;
-  g_pCommon->grid = nullptr;
-  std::cout << "Shutdown successfull" << std::endl;
-}
-
-// Resize event handler
-void OnResize(int w, int h) {
-  // set the viewport
-  glViewport(0, 0, static_cast<GLsizei>(w), static_cast<GLsizei>(h));
-
-  // setup the projection matrix
-  g_pCommon->P = glm::perspective(45.0f, static_cast<GLfloat>(w) / h,
-                                  0.1f, 1000.f);
-}
-
-// idle callback just calls the display function
-void OnIdle() { glutPostRedisplay(); }
 
 // scene rendering function
 void DrawScene(glm::mat4 View, glm::mat4 Proj) {
@@ -395,25 +350,27 @@ void DrawScene(glm::mat4 View, glm::mat4 Proj) {
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, nullptr);
     GL_CHECK_ERRORS;
   }
-
   // bind the sphere vertex array object
   glBindVertexArray(g_pCommon->sphereVAOID);
   // set the sphere's transform
-  auto T   = glm::translate(glm::mat4(1), glm::vec3(0, 1, 0));
-  auto M   = T;
-  auto MV  = View * M;
+  auto T = glm::translate(glm::mat4(1), glm::vec3(0, 1, 0));
+  auto M = T;
+  auto MV = View * M;
   auto MVP = Proj * MV;
   // pass shader uniforms
-  glUniformMatrix4fv(g_pCommon->shader("MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
+  glUniformMatrix4fv(g_pCommon->shader("MVP"), 1, GL_FALSE,
+                     glm::value_ptr(MVP));
   glUniformMatrix4fv(g_pCommon->shader("MV"), 1, GL_FALSE, glm::value_ptr(MV));
   glUniformMatrix3fv(g_pCommon->shader("N"), 1, GL_FALSE,
-      glm::value_ptr(glm::inverseTranspose(glm::mat3(MV))));
+                     glm::value_ptr(glm::inverseTranspose(glm::mat3(MV))));
   glUniform3f(g_pCommon->shader("diffuse_color"), 0.9f, 0.9f, 1.0f);
   glUniform3f(g_pCommon->shader("specular_color"), 1.0f, 1.0f, 1.0f);
   glUniform1f(g_pCommon->shader("shininess"), 300);
-  glUniform3fv(g_pCommon->shader("light_position"), 1, &(g_pCommon->lightPosOS.x));
+  glUniform3fv(g_pCommon->shader("light_position"), 1,
+               &(g_pCommon->lightPosOS.x));
   // draw triangles
-  glDrawElements(GL_TRIANGLES, g_pCommon->totalSphereTriangles, GL_UNSIGNED_SHORT, nullptr);
+  glDrawElements(GL_TRIANGLES, g_pCommon->totalSphereTriangles,
+                 GL_UNSIGNED_SHORT, nullptr);
 
   // unbind shader
   g_pCommon->shader.UnUse();
@@ -421,55 +378,89 @@ void DrawScene(glm::mat4 View, glm::mat4 Proj) {
   // unbind vertex array object
   glBindVertexArray(0);
 
-  GL_CHECK_ERRORS;;
+  GL_CHECK_ERRORS;
+  ;
 
   // render the grid object
   g_pCommon->grid->Render(glm::value_ptr(Proj * View));
 }
 
-// display callback function
-void OnRender() {
-  // increment the radius so cubes are radially displaced each frame
-  g_pCommon->radius += g_pCommon->dx;
-
-  // if we are at limits, change the movement direction
-  if (g_pCommon->radius < 1 || g_pCommon->radius > 5) {
-    g_pCommon->dx = -g_pCommon->dx;
-  }
-
-  GL_CHECK_ERRORS;
-
-  // clear colour and depth buffers
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  // set the camera transform
-  const auto T  = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, g_pCommon->dist));
-  const auto Rx = glm::rotate(T,  g_pCommon->rX, glm::vec3(1.0f, 0.0f, 0.0f));
-  const auto MV = glm::rotate(Rx, g_pCommon->rY, glm::vec3(0.0f, 1.0f, 0.0f));
-
-  // render scene
-  DrawScene(MV, g_pCommon->P);
-
-  // swap front and back buffers to show the rendered result
-  glutSwapBuffers();
-}
-
 int main(int argc, char **argv) {
+  (void)argc; (void)argv;
   Common common;
   g_pCommon = &common;
-  // freeglut initialization
-  glutInit(&argc, argv);
-  glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
-  glutInitContextVersion(3, 3);
-  glutInitContextFlags(GLUT_CORE_PROFILE | GLUT_DEBUG);
-  glutInitWindowSize(Common::WIDTH, Common::HEIGHT);
-  glutCreateWindow("Per-vertex Lighting - OpenGL 3.3");
+
+  glfwSetErrorCallback([](int errorCode, const char* message) {
+    fprintf(stderr, "GLFW ERROR(%d): %s\n", errorCode, message);
+  });
+
+  // glfw initialization
+  if (glfwInit() != GLFW_TRUE) {
+    return EXIT_FAILURE;
+  }
+
+  glfwWindowHint(GLFW_RED_BITS,   8);
+  glfwWindowHint(GLFW_GREEN_BITS, 8);
+  glfwWindowHint(GLFW_BLUE_BITS,  8);
+  glfwWindowHint(GLFW_DEPTH_BITS, 16);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
+  // clang-format off
+  auto *pWindow = glfwCreateWindow(Common::WIDTH, Common::HEIGHT,
+                                   "Per-vertex Lighting - OpenGL 3.3",
+                                   nullptr, nullptr);
+  if (pWindow == nullptr) {
+    glfwTerminate();
+    return EXIT_FAILURE;
+  }
+  glfwMakeContextCurrent(pWindow);
+  glfwSetMouseButtonCallback(pWindow, [](GLFWwindow* pWin, int button, int action, [[maybe_unused]]int mod) {
+    if (button == GLFW_MOUSE_BUTTON_LEFT  && action == GLFW_PRESS) {
+      g_pCommon->state = State::Left;
+    } else if(button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS) {
+      g_pCommon->state = State::Middle;
+    } else if(button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+      g_pCommon->state = State::Right;
+    } else {
+      g_pCommon->state = State::None;
+    }
+    double x, y;
+    glfwGetCursorPos(pWin, &x, &y);
+    g_pCommon->oldX = static_cast<int>(x);
+    g_pCommon->oldY = static_cast<int>(y);
+  });
+  glfwSetCursorPosCallback(pWindow, []([[maybe_unused]]GLFWwindow* pWin, double x, double y) {
+    if (g_pCommon->state == State::Right) {
+      g_pCommon->dist *= (1.F + float(y - g_pCommon->oldY) / 60.0F);
+    } else if(g_pCommon->state == State::Left) {
+      g_pCommon->rX += float(x - g_pCommon->oldX) * g_pCommon->MouseDeltaX;
+      g_pCommon->rY += float(y - g_pCommon->oldY) * g_pCommon->MouseDeltaY;
+    }
+    g_pCommon->oldX = static_cast<int>(x);
+    g_pCommon->oldY = static_cast<int>(y);
+  });
+  glfwSetWindowSizeCallback(pWindow, []([[maybe_unused]]GLFWwindow* pWin, int w, int h) {
+    // set the viewport
+    glViewport(0, 0, w, h);
+
+    // setup the projection matrix
+    g_pCommon->P = glm::perspective(
+        glm::radians(45.0F), static_cast<GLfloat>(w) / static_cast<GLfloat>(h), 0.1F, 1000.F);
+  });
+  // clang-format on
+
+  const auto ratio = static_cast<GLfloat>(Common::WIDTH) /
+                     static_cast<GLfloat>(Common::HEIGHT);
+  g_pCommon->P = glm::perspective(glm::radians(45.0F), ratio, 0.1F, 1000.F);
 
   // initialize glew
   glewExperimental = GL_TRUE;
   GLenum err = glewInit();
   if (GLEW_OK != err) {
     std::cerr << "Error: " << glewGetErrorString(err) << std::endl;
+    return EXIT_FAILURE;
   } else {
     if (GLEW_VERSION_3_3) {
       std::cout << "Driver supports OpenGL 3.3\nDetails:" << std::endl;
@@ -479,26 +470,115 @@ int main(int argc, char **argv) {
   GL_CHECK_ERRORS;
 
   // output hardware information
-  std::cout << "\tUsing GLEW " << glewGetString(GLEW_VERSION)              << std::endl;
-  std::cout << "\tVendor: "    << glGetString(GL_VENDOR)                   << std::endl;
-  std::cout << "\tRenderer: "  << glGetString(GL_RENDERER)                 << std::endl;
-  std::cout << "\tVersion: "   << glGetString(GL_VERSION)                  << std::endl;
-  std::cout << "\tGLSL: "      << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+  std::cout << "\tUsing GLEW " << glewGetString(GLEW_VERSION) << std::endl;
+  std::cout << "\tVendor: "    << glGetString(GL_VENDOR)      << std::endl;
+  std::cout << "\tRenderer: "  << glGetString(GL_RENDERER)    << std::endl;
+  std::cout << "\tVersion: "   << glGetString(GL_VERSION)     << std::endl;
+  std::cout << "\tGLSL: "      << glGetString(GL_SHADING_LANGUAGE_VERSION)
+            << std::endl;
   GL_CHECK_ERRORS;
 
   // OpenGL initialization
   OnInit();
 
-  // callback hooks
-  glutCloseFunc(OnShutdown);
-  glutDisplayFunc(OnRender);
-  glutReshapeFunc(OnResize);
-  glutMouseFunc(OnMouseDown);
-  glutMotionFunc(OnMouseMove);
-  glutIdleFunc(OnIdle);
+  // Initialize ImGui
+  IMGUI_CHECKVERSION();
+  ImGui::CreateContext();
+  ImGuiIO& io = ImGui::GetIO();
+  (void)io;
 
-  // mainloop call
-  glutMainLoop();
+  // Setup Dear ImGui style
+  ImGui::StyleColorsDark();
 
-  return 0;
+  // Setup Platform/Renderer backends
+  ImGui_ImplGlfw_InitForOpenGL(pWindow, true);
+  ImGui_ImplOpenGL3_Init("#version 150");
+
+  bool bShowGUI = true;
+
+  while(!glfwWindowShouldClose(pWindow)) {
+    glfwPollEvents();
+
+    // Start the Dear ImGui frame
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    ImGui::Begin("Widget", &bShowGUI);
+    {
+      double x, y;
+      glfwGetCursorPos(pWindow, &x, &y);
+      ImGui::Text("Mouse    (%03.3F,%03.3F)", x, y);
+      ImGui::Text("Rotation (%03.3F,%03.3F)", g_pCommon->rX,   g_pCommon->rY);
+      ImGui::Text("Old      (%03d,%03d)",     g_pCommon->oldY, g_pCommon->oldY);
+      ImGui::Text("Zoom : %03.3F", g_pCommon->dist);
+      if(ImGui::Button("Reset View")) {
+        g_pCommon->rX   = 56.F;
+        g_pCommon->rY   = 44.F;
+        g_pCommon->dist =-5.F;
+      }
+      ImGui::DragFloat("DeltaX", &g_pCommon->MouseDeltaX, 0.01F, 1.0F / 1000.F, 1.0F);
+      ImGui::DragFloat("DeltaY", &g_pCommon->MouseDeltaY, 0.01F, 1.0F / 1000.F, 1.0F);
+
+      const char* items[] = {
+        "None",
+        "Left",
+        "Middle",
+        "Right"
+      };
+      ImGui::Combo("Mouse", reinterpret_cast<int*>(&g_pCommon->state),
+                   items, IM_ARRAYSIZE(items));
+    }
+    ImGui::End();
+
+    // increment the radius so cubes are radially displaced each frame
+    g_pCommon->radius += g_pCommon->dx;
+
+    // if we are at limits, change the movement direction
+    if (g_pCommon->radius < 1 || g_pCommon->radius > 5) {
+      g_pCommon->dx = -g_pCommon->dx;
+    }
+
+    GL_CHECK_ERRORS;
+
+    // Rendering
+    ImGui::Render();
+
+    // clear colour and depth buffers
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // set the camera transform
+    const auto T  = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, g_pCommon->dist));
+    const auto Rx = glm::rotate(T,  g_pCommon->rY, glm::vec3(1.0f, 0.0f, 0.0f));
+    const auto MV = glm::rotate(Rx, g_pCommon->rX, glm::vec3(0.0f, 1.0f, 0.0f));
+    // render scene
+    DrawScene(MV, g_pCommon->P);
+
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    // swap front and back buffers to show the rendered result
+    glfwSwapBuffers(pWindow);
+  }
+
+  // Destroy shader
+  g_pCommon->shader.DeleteShaderProgram();
+  // Destroy vao and vbo
+  glDeleteBuffers(1, &g_pCommon->sphereVerticesVBO);
+  glDeleteBuffers(1, &g_pCommon->sphereIndicesVBO);
+  glDeleteVertexArrays(1, &g_pCommon->sphereVAOID);
+
+  glDeleteBuffers(1, &g_pCommon->cubeVerticesVBO);
+  glDeleteBuffers(1, &g_pCommon->cubeIndicesVBO);
+  glDeleteVertexArrays(1, &g_pCommon->cubeVAOID);
+
+  // Cleanup
+  ImGui_ImplOpenGL3_Shutdown();
+  ImGui_ImplGlfw_Shutdown();
+  ImGui::DestroyContext();
+
+  delete g_pCommon->grid;
+  g_pCommon->grid = nullptr;
+  std::cout << "Shutdown successfull" << std::endl;
+
+  return EXIT_SUCCESS;
 }
+
