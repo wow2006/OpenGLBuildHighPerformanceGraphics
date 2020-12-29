@@ -1,3 +1,5 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 // STL
 #include <cmath>
 #include <vector>
@@ -12,14 +14,12 @@
 #include <imgui_impl_opengl3.h>
 // glm
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 // Internal
 #include "GLSLShader.hpp"
 #include "Grid.hpp"
-
-#define GL_CHECK_ERRORS assert(glGetError() == GL_NO_ERROR)
 
 // Vertex struct with position and normal
 struct Vertex {
@@ -29,6 +29,12 @@ struct Vertex {
 
 enum State {
   None = 0, Left, Middle, Right
+};
+
+struct Matrices {
+  glm::mat4 MVP;
+  glm::mat4 MV;
+  glm::mat4 Normal;
 };
 
 struct Common {
@@ -41,6 +47,8 @@ struct Common {
 
   // per-vertex lighting shader
   GLSLShader shader;
+
+  GLuint UBO = 0;
 
   // sphere vertex array and vertex buffer object IDs
   GLuint sphereVAOID;
@@ -89,6 +97,8 @@ struct Common {
 };
 static Common *g_pCommon = nullptr;
 
+constexpr auto BindingPoint = 0;
+
 // add the given sphere indices to the indices vector
 inline void push_indices(int sectors, int r, int s,
                          std::vector<GLushort> &indices) {
@@ -111,17 +121,17 @@ void CreateSphere(float radius, unsigned int slices, unsigned int stacks,
    float const R = 1.0f / static_cast<float>(slices - 1);
    float const S = 1.0f / static_cast<float>(stacks - 1);
 
-   for(int r = 0; r < slices; ++r) {
-    for(int s = 0; s < stacks; ++s) {
-      float const y = static_cast<float>(sin(-M_PI_2 + glm::pi<float>() * r * R));
-      float const x = static_cast<float>(cos(2.F * glm::pi<float>() * s * S) * sin(glm::pi<float>() * r * R));
-      float const z = static_cast<float>(sin(2.F * glm::pi<float>() * s * S) * sin(glm::pi<float>() * r * R));
+   for(uint r = 0; r < slices; ++r) {
+    for(uint s = 0; s < stacks; ++s) {
+      float const y = static_cast<float>(sinf(-static_cast<float>(M_PI_2) + glm::pi<float>() * static_cast<float>(r) * R));
+      float const x = static_cast<float>(cosf(2.F * glm::pi<float>() * static_cast<float>(s) * S) * sinf(glm::pi<float>() * static_cast<float>(r) * R));
+      float const z = static_cast<float>(sinf(2.F * glm::pi<float>() * static_cast<float>(s) * S) * sinf(glm::pi<float>() * static_cast<float>(r) * R));
 
       Vertex v;
       v.pos = glm::vec3(x, y, z) * radius;
       v.normal = glm::normalize(v.pos);
       vertices.push_back(v);
-      push_indices(static_cast<int>(stacks), r, s, indices);
+      push_indices(static_cast<int>(stacks), static_cast<int>(r), static_cast<int>(s), indices);
     }
   }
 }
@@ -210,25 +220,22 @@ void CreateCube(const float &size, std::vector<Vertex> &vertices,
 // OpenGL initialization
 void OnInit() {
   // load the per-vertex lighting shader
-  g_pCommon->shader.LoadFromFile(GL_VERTEX_SHADER,
-                                 "shaders/perVertexLighting.vert");
-  g_pCommon->shader.LoadFromFile(GL_FRAGMENT_SHADER,
-                                 "shaders/perVertexLighting.frag");
+  g_pCommon->shader.LoadFromFile(GL_VERTEX_SHADER,   "shaders/perVertexLighting.vert");
+  g_pCommon->shader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/perVertexLighting.frag");
   // compile and link shader
   g_pCommon->shader.CreateAndLinkProgram();
   g_pCommon->shader.Use();
   // add attributes and uniforms
   g_pCommon->shader.AddAttribute("vVertex");
   g_pCommon->shader.AddAttribute("vNormal");
-  g_pCommon->shader.AddUniform("MVP");
-  g_pCommon->shader.AddUniform("MV");
-  g_pCommon->shader.AddUniform("N");
+  //g_pCommon->shader.AddUniform("MVP");
+  //g_pCommon->shader.AddUniform("MV");
+  //g_pCommon->shader.AddUniform("N");
   g_pCommon->shader.AddUniform("light_position");
   g_pCommon->shader.AddUniform("diffuse_color");
   g_pCommon->shader.AddUniform("specular_color");
   g_pCommon->shader.AddUniform("shininess");
   g_pCommon->shader.UnUse();
-  GL_CHECK_ERRORS;
 
   // Cerate sphere geometry
   CreateSphere(1.0f, 10, 10, g_pCommon->vertices, g_pCommon->indices);
@@ -241,25 +248,17 @@ void OnInit() {
 
   glBindBuffer(GL_ARRAY_BUFFER, g_pCommon->sphereVerticesVBO);
   // pass vertices to the buffer object
-  glBufferData(GL_ARRAY_BUFFER, g_pCommon->vertices.size() * sizeof(Vertex),
-               &g_pCommon->vertices[0], GL_STATIC_DRAW);
-  GL_CHECK_ERRORS;
+  glBufferData(GL_ARRAY_BUFFER, g_pCommon->vertices.size() * sizeof(Vertex), &g_pCommon->vertices[0], GL_STATIC_DRAW);
   // enable vertex attribute array for position
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
-  GL_CHECK_ERRORS;
   // enable vertex attribute array for normal
   glEnableVertexAttribArray(1);
-  glVertexAttribPointer(
-      1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-      reinterpret_cast<const GLvoid *>(offsetof(Vertex, normal)));
-  GL_CHECK_ERRORS;
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const GLvoid *>(offsetof(Vertex, normal)));
 
   // pass sphere indices to element array buffer
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_pCommon->sphereIndicesVBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-               g_pCommon->indices.size() * sizeof(GLushort),
-               &g_pCommon->indices[0], GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, g_pCommon->indices.size() * sizeof(GLushort), &g_pCommon->indices[0], GL_STATIC_DRAW);
 
   // store the total number of sphere triangles
   g_pCommon->totalSphereTriangles = static_cast<int>(g_pCommon->indices.size());
@@ -280,28 +279,19 @@ void OnInit() {
 
   glBindBuffer(GL_ARRAY_BUFFER, g_pCommon->cubeVerticesVBO);
   // pass vertices to the buffer object
-  glBufferData(GL_ARRAY_BUFFER, g_pCommon->vertices.size() * sizeof(Vertex),
-               &g_pCommon->vertices[0], GL_STATIC_DRAW);
-  GL_CHECK_ERRORS;
+  glBufferData(GL_ARRAY_BUFFER, g_pCommon->vertices.size() * sizeof(Vertex), &g_pCommon->vertices[0], GL_STATIC_DRAW);
 
   // enable vertex attribut array for position
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
-  GL_CHECK_ERRORS;
 
   // enable vertex attribut array for normal
   glEnableVertexAttribArray(1);
-  glVertexAttribPointer(
-      1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-      reinterpret_cast<const GLvoid *>(offsetof(Vertex, normal)));
-  GL_CHECK_ERRORS;
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const GLvoid *>(offsetof(Vertex, normal)));
 
   // pass cube indices to element array buffer
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_pCommon->cubeIndicesVBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-               g_pCommon->indices.size() * sizeof(GLushort),
-               &g_pCommon->indices[0], GL_STATIC_DRAW);
-  GL_CHECK_ERRORS;
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, g_pCommon->indices.size() * sizeof(GLushort), &g_pCommon->indices[0], GL_STATIC_DRAW);
 
   // enable depth testing and culling
   glEnable(GL_DEPTH_TEST);
@@ -310,45 +300,43 @@ void OnInit() {
   // create a grid of 10x10 size in XZ plane
   g_pCommon->grid = new CGrid();
 
-  GL_CHECK_ERRORS;
-
   std::cout << "Initialization successfull" << std::endl;
 }
 
 // scene rendering function
 void DrawScene(glm::mat4 View, glm::mat4 Proj) {
-  GL_CHECK_ERRORS;
-
   // Bind the current shader
   g_pCommon->shader.Use();
 
   // bind the cube vertex array object
   glBindVertexArray(g_pCommon->cubeVAOID);
 
+  const auto UBO = g_pCommon->UBO;
   // draw the 8 cubes first
   for (int i = 0; i < 8; i++) {
     // set the cube's transform
-    const float theta = i / 8.0f * 2.f * static_cast<float>(M_PI);
-    glm::mat4 T = glm::translate(
-        glm::mat4(1), glm::vec3(g_pCommon->radius * std::cos(theta),
-                                0.5f,
-                                g_pCommon->radius * std::sin(theta)));
+    const float theta = static_cast<float>(i) / 8.0F * 2.F * glm::pi<float>();
+    glm::mat4 T = glm::translate(glm::mat4(1), glm::vec3(g_pCommon->radius * std::cos(theta), 0.5f, g_pCommon->radius * std::sin(theta)));
     glm::mat4 M   = T;         // Model matrix
     glm::mat4 MV  = View * M;  // ModelView matrix
     glm::mat4 MVP = Proj * MV; // combined ModelView  Projection matrix
+    const auto matrices = Matrices {
+      MVP,
+      MV,
+      glm::mat3(glm::inverse(MV))
+    };
 
     // pass shader uniforms
-    glUniformMatrix4fv(g_pCommon->shader("MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
-    glUniformMatrix4fv(g_pCommon->shader("MV"), 1, GL_FALSE, glm::value_ptr(MV));
-    glUniformMatrix3fv(g_pCommon->shader("N"), 1, GL_FALSE,
-        glm::value_ptr(glm::inverseTranspose(glm::mat3(MV))));
+    glBindBuffer(GL_UNIFORM_BUFFER, UBO);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Matrices), &matrices);
+    glUniformBlockBinding(g_pCommon->shader._program, 0, BindingPoint);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
     glUniform3fv(g_pCommon->shader("diffuse_color"), 1, &(g_pCommon->colors[i].x));
     glUniform3f(g_pCommon->shader("specular_color"), 1.0f, 1.0f, 1.0f);
     glUniform1f(g_pCommon->shader("shininess"), 100);
     glUniform3fv(g_pCommon->shader("light_position"), 1, &(g_pCommon->lightPosOS.x));
     // draw triangles
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, nullptr);
-    GL_CHECK_ERRORS;
   }
   // bind the sphere vertex array object
   glBindVertexArray(g_pCommon->sphereVAOID);
@@ -357,29 +345,28 @@ void DrawScene(glm::mat4 View, glm::mat4 Proj) {
   auto M = T;
   auto MV = View * M;
   auto MVP = Proj * MV;
+  const auto matrices = Matrices {
+    MVP,
+    MV,
+    glm::mat3(glm::inverse(MV))
+  };
   // pass shader uniforms
-  glUniformMatrix4fv(g_pCommon->shader("MVP"), 1, GL_FALSE,
-                     glm::value_ptr(MVP));
-  glUniformMatrix4fv(g_pCommon->shader("MV"), 1, GL_FALSE, glm::value_ptr(MV));
-  glUniformMatrix3fv(g_pCommon->shader("N"), 1, GL_FALSE,
-                     glm::value_ptr(glm::inverseTranspose(glm::mat3(MV))));
+  glBindBuffer(GL_UNIFORM_BUFFER, UBO);
+  glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Matrices), &matrices);
+  glUniformBlockBinding(g_pCommon->shader._program, 0, BindingPoint);
+  glBindBuffer(GL_UNIFORM_BUFFER, 0);
   glUniform3f(g_pCommon->shader("diffuse_color"), 0.9f, 0.9f, 1.0f);
   glUniform3f(g_pCommon->shader("specular_color"), 1.0f, 1.0f, 1.0f);
   glUniform1f(g_pCommon->shader("shininess"), 300);
-  glUniform3fv(g_pCommon->shader("light_position"), 1,
-               &(g_pCommon->lightPosOS.x));
+  glUniform3fv(g_pCommon->shader("light_position"), 1, &(g_pCommon->lightPosOS.x));
   // draw triangles
-  glDrawElements(GL_TRIANGLES, g_pCommon->totalSphereTriangles,
-                 GL_UNSIGNED_SHORT, nullptr);
+  glDrawElements(GL_TRIANGLES, g_pCommon->totalSphereTriangles, GL_UNSIGNED_SHORT, nullptr);
 
   // unbind shader
   g_pCommon->shader.UnUse();
 
   // unbind vertex array object
   glBindVertexArray(0);
-
-  GL_CHECK_ERRORS;
-  ;
 
   // render the grid object
   g_pCommon->grid->Render(glm::value_ptr(Proj * View));
@@ -406,6 +393,8 @@ int main(int argc, char **argv) {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+
   glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
   // clang-format off
   auto *pWindow = glfwCreateWindow(Common::WIDTH, Common::HEIGHT,
@@ -467,7 +456,17 @@ int main(int argc, char **argv) {
     }
   }
   err = glGetError(); // this is to ignore INVALID ENUM error 1282
-  GL_CHECK_ERRORS;
+
+  if(glDebugMessageCallbackARB) {
+    std::cout << "OpenGL Debug\n";
+    glDebugMessageCallbackARB([](
+      GLenum, GLenum, GLuint, GLenum severity,
+      GLsizei, const char* message, const void*) {
+        if(severity == GL_DEBUG_SEVERITY_HIGH_ARB) {
+          std::cerr << "OpenGL ERROR: " << message << '\n';
+        }
+    }, nullptr);
+  }
 
   // output hardware information
   std::cout << "\tUsing GLEW " << glewGetString(GLEW_VERSION) << std::endl;
@@ -476,7 +475,6 @@ int main(int argc, char **argv) {
   std::cout << "\tVersion: "   << glGetString(GL_VERSION)     << std::endl;
   std::cout << "\tGLSL: "      << glGetString(GL_SHADING_LANGUAGE_VERSION)
             << std::endl;
-  GL_CHECK_ERRORS;
 
   // OpenGL initialization
   OnInit();
@@ -492,9 +490,14 @@ int main(int argc, char **argv) {
 
   // Setup Platform/Renderer backends
   ImGui_ImplGlfw_InitForOpenGL(pWindow, true);
-  ImGui_ImplOpenGL3_Init("#version 150");
+  ImGui_ImplOpenGL3_Init("#version 330 core");
 
-  bool bShowGUI = true;
+  GLuint& UBO = g_pCommon->UBO;
+  glGenBuffers(1, &UBO);
+  glBindBuffer(GL_UNIFORM_BUFFER, UBO);
+  glBufferData(GL_UNIFORM_BUFFER, sizeof(Matrices), nullptr, GL_DYNAMIC_DRAW);
+  glBindBufferBase(GL_UNIFORM_BUFFER, BindingPoint, UBO);
+  glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
   while(!glfwWindowShouldClose(pWindow)) {
     glfwPollEvents();
@@ -504,7 +507,7 @@ int main(int argc, char **argv) {
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    ImGui::Begin("Widget", &bShowGUI);
+    ImGui::Begin("Widget");
     {
       double x, y;
       glfwGetCursorPos(pWindow, &x, &y);
@@ -539,8 +542,6 @@ int main(int argc, char **argv) {
       g_pCommon->dx = -g_pCommon->dx;
     }
 
-    GL_CHECK_ERRORS;
-
     // Rendering
     ImGui::Render();
 
@@ -551,6 +552,7 @@ int main(int argc, char **argv) {
     const auto T  = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, g_pCommon->dist));
     const auto Rx = glm::rotate(T,  g_pCommon->rY, glm::vec3(1.0f, 0.0f, 0.0f));
     const auto MV = glm::rotate(Rx, g_pCommon->rX, glm::vec3(0.0f, 1.0f, 0.0f));
+
     // render scene
     DrawScene(MV, g_pCommon->P);
 
