@@ -311,7 +311,10 @@ void DrawScene(glm::mat4 View, glm::mat4 Proj) {
   // bind the cube vertex array object
   glBindVertexArray(g_pCommon->cubeVAOID);
 
-  const auto UBO = g_pCommon->UBO;
+  const auto UBO     = g_pCommon->UBO;
+  const auto program = g_pCommon->shader._program;
+  glUniformBlockBinding(program, 0, BindingPoint);
+
   // draw the 8 cubes first
   for (int i = 0; i < 8; i++) {
     // set the cube's transform
@@ -327,10 +330,12 @@ void DrawScene(glm::mat4 View, glm::mat4 Proj) {
     };
 
     // pass shader uniforms
-    glBindBuffer(GL_UNIFORM_BUFFER, UBO);
-    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Matrices), &matrices);
-    glUniformBlockBinding(g_pCommon->shader._program, 0, BindingPoint);
-    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    {
+      glBindBuffer(GL_UNIFORM_BUFFER, UBO);
+      glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Matrices), &matrices);
+      glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    }
+
     glUniform3fv(g_pCommon->shader("diffuse_color"), 1, &(g_pCommon->colors[i].x));
     glUniform3f(g_pCommon->shader("specular_color"), 1.0f, 1.0f, 1.0f);
     glUniform1f(g_pCommon->shader("shininess"), 100);
@@ -351,10 +356,12 @@ void DrawScene(glm::mat4 View, glm::mat4 Proj) {
     glm::mat3(glm::inverse(MV))
   };
   // pass shader uniforms
-  glBindBuffer(GL_UNIFORM_BUFFER, UBO);
-  glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Matrices), &matrices);
-  glUniformBlockBinding(g_pCommon->shader._program, 0, BindingPoint);
-  glBindBuffer(GL_UNIFORM_BUFFER, 0);
+  {
+    glBindBuffer(GL_UNIFORM_BUFFER, UBO);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Matrices), &matrices);
+    glUniformBlockBinding(g_pCommon->shader._program, 0, BindingPoint);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+  }
   glUniform3f(g_pCommon->shader("diffuse_color"), 0.9f, 0.9f, 1.0f);
   glUniform3f(g_pCommon->shader("specular_color"), 1.0f, 1.0f, 1.0f);
   glUniform1f(g_pCommon->shader("shininess"), 300);
