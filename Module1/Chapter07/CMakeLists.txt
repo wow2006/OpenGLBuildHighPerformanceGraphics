@@ -1,5 +1,8 @@
-# ${CMAKE_SOURCE_DIR}/src/Module1/Chapter07/CMakeLists.txt
+# ${CMAKE_SOURCE_DIR}/Module1/Chapter07/CMakeLists.txt
+set(OUTPUT_DIR "${PROJECT_BINARY_DIR}/bin/Module1/Chapter07/")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${OUTPUT_DIR}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${OUTPUT_DIR}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}")
 
 add_subdirectory(3DTextureSlicing)
 add_subdirectory(3DTextureSlicingClassification)
-
