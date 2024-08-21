@@ -2,16 +2,17 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 // STL
 #include <cmath>
+#include <glm/gtc/constants.hpp>
 #include <vector>
 #include <iostream>
 // GL
 #include <GL/glew.h>
-// GLFW
-#include <GLFW/glfw3.h>
 // ImGui
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+// GLFW
+#include <GLFW/glfw3.h>
 // glm
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -118,14 +119,14 @@ inline void push_indices(int sectors, int r, int s,
 void CreateSphere(float radius, unsigned int slices, unsigned int stacks,
                   std::vector<Vertex> &vertices,
                   std::vector<GLushort> &indices) {
-   float const R = 1.0f / static_cast<float>(slices - 1);
-   float const S = 1.0f / static_cast<float>(stacks - 1);
+   double const R = 1.0 / static_cast<double>(slices - 1);
+   double const S = 1.0 / static_cast<double>(stacks - 1);
 
-   for(uint r = 0; r < slices; ++r) {
-    for(uint s = 0; s < stacks; ++s) {
-      float const y = static_cast<float>(sinf(-static_cast<float>(M_PI_2) + glm::pi<float>() * static_cast<float>(r) * R));
-      float const x = static_cast<float>(cosf(2.F * glm::pi<float>() * static_cast<float>(s) * S) * sinf(glm::pi<float>() * static_cast<float>(r) * R));
-      float const z = static_cast<float>(sinf(2.F * glm::pi<float>() * static_cast<float>(s) * S) * sinf(glm::pi<float>() * static_cast<float>(r) * R));
+   for(unsigned int r = 0; r < slices; ++r) {
+    for(unsigned int s = 0; s < stacks; ++s) {
+      float const y = static_cast<float>(sin(-glm::half_pi<double>() + glm::pi<double>() * static_cast<double>(r) * R));
+      float const x = static_cast<float>(cos(2.F * glm::pi<double>() * static_cast<double>(s) * S) * sin(glm::pi<double>() * static_cast<double>(r) * R));
+      float const z = static_cast<float>(sin(2.F * glm::pi<double>() * static_cast<double>(s) * S) * sin(glm::pi<double>() * static_cast<double>(r) * R));
 
       Vertex v;
       v.pos = glm::vec3(x, y, z) * radius;

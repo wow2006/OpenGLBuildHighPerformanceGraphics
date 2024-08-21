@@ -89,23 +89,20 @@ inline void push_indices(int sectors, int r, int s,
 void CreateSphere(float radius, unsigned int slices, unsigned int stacks,
                   std::vector<Vertex> &vertices,
                   std::vector<GLushort> &indices) {
-  const double R = 1.0 / (slices - 1);
-  const double S = 1.0 / (stacks - 1);
+   double const R = 1.0 / static_cast<double>(slices - 1);
+   double const S = 1.0 / static_cast<double>(stacks - 1);
 
-  for (size_t r = 0; r < slices; ++r) {
-    for (size_t s = 0; s < stacks; ++s) {
-      const float y = static_cast<float>(sin(-M_PI_2 + M_PI * r * R));
-      const float x =
-          static_cast<float>(cos(2 * M_PI * s * S) * sin(M_PI * r * R));
-      const float z =
-          static_cast<float>(sin(2 * M_PI * s * S) * sin(M_PI * r * R));
+   for(unsigned int r = 0; r < slices; ++r) {
+    for(unsigned int s = 0; s < stacks; ++s) {
+      float const y = static_cast<float>(sin(-glm::half_pi<double>() + glm::pi<double>() * static_cast<double>(r) * R));
+      float const x = static_cast<float>(cos(2.F * glm::pi<double>() * static_cast<double>(s) * S) * sin(glm::pi<double>() * static_cast<double>(r) * R));
+      float const z = static_cast<float>(sin(2.F * glm::pi<double>() * static_cast<double>(s) * S) * sin(glm::pi<double>() * static_cast<double>(r) * R));
 
       Vertex v;
       v.pos = glm::vec3(x, y, z) * radius;
       v.normal = glm::normalize(v.pos);
       vertices.push_back(v);
-      push_indices(static_cast<int>(stacks), static_cast<int>(r),
-                   static_cast<int>(s), indices);
+      push_indices(static_cast<int>(stacks), static_cast<int>(r), static_cast<int>(s), indices);
     }
   }
 }
