@@ -1,4 +1,5 @@
 // STL
+#include <glm/gtc/constants.hpp>
 #include <vector>
 #include <cstdlib>
 #include <iostream>
@@ -64,7 +65,7 @@ int state = 0, oldX = 0, oldY = 0;
 float rX = 42, rY = 180, dist = -80;
 
 // OBJ mesh filename to load
-const std::string mesh_filename = "media/blocks.obj";
+const std::string mesh_filename = "SSAO/media/blocks.obj";
 
 // FBO ids for normal and filtering FBO
 GLuint fboID, filterFBOID;
@@ -419,8 +420,8 @@ void OnInit() {
   GL_CHECK_ERRORS;
 
   // setup flat shader
-  flatShader.LoadFromFile(GL_VERTEX_SHADER, "shaders/flat.vert");
-  flatShader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/flat.frag");
+  flatShader.LoadFromFile(GL_VERTEX_SHADER, "SSAO/shaders/flat.vert");
+  flatShader.LoadFromFile(GL_FRAGMENT_SHADER, "SSAO/shaders/flat.frag");
   // compile and link shader
   flatShader.CreateAndLinkProgram();
   flatShader.Use();
@@ -430,8 +431,8 @@ void OnInit() {
   flatShader.UnUse();
 
   // load final shader
-  finalShader.LoadFromFile(GL_VERTEX_SHADER, "shaders/Passthrough.vert");
-  finalShader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/final.frag");
+  finalShader.LoadFromFile(GL_VERTEX_SHADER, "SSAO/shaders/Passthrough.vert");
+  finalShader.LoadFromFile(GL_FRAGMENT_SHADER, "SSAO/shaders/final.frag");
   // compile and link shader
   finalShader.CreateAndLinkProgram();
   finalShader.Use();
@@ -444,8 +445,8 @@ void OnInit() {
   finalShader.UnUse();
 
   // load the point light rendering shader
-  shader.LoadFromFile(GL_VERTEX_SHADER, "shaders/shader.vert");
-  shader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/shader.frag");
+  shader.LoadFromFile(GL_VERTEX_SHADER, "SSAO/shaders/shader.vert");
+  shader.LoadFromFile(GL_FRAGMENT_SHADER, "SSAO/shaders/shader.frag");
   shader.CreateAndLinkProgram();
   shader.Use();
   // add attribute and uniform
@@ -466,8 +467,8 @@ void OnInit() {
   shader.UnUse();
 
   // load the horizontal Gaussian blurring shader
-  gaussianH_shader.LoadFromFile(GL_VERTEX_SHADER, "shaders/Passthrough.vert");
-  gaussianH_shader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/GaussH.frag");
+  gaussianH_shader.LoadFromFile(GL_VERTEX_SHADER, "SSAO/shaders/Passthrough.vert");
+  gaussianH_shader.LoadFromFile(GL_FRAGMENT_SHADER, "SSAO/shaders/GaussH.frag");
 
   // compile and link shader
   gaussianH_shader.CreateAndLinkProgram();
@@ -480,8 +481,8 @@ void OnInit() {
   gaussianH_shader.UnUse();
 
   // load the vertical Gaussian blurring shader
-  gaussianV_shader.LoadFromFile(GL_VERTEX_SHADER, "shaders/Passthrough.vert");
-  gaussianV_shader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/GaussV.frag");
+  gaussianV_shader.LoadFromFile(GL_VERTEX_SHADER, "SSAO/shaders/Passthrough.vert");
+  gaussianV_shader.LoadFromFile(GL_FRAGMENT_SHADER, "SSAO/shaders/GaussV.frag");
 
   // compile and link shader
   gaussianV_shader.CreateAndLinkProgram();
@@ -494,9 +495,9 @@ void OnInit() {
   gaussianV_shader.UnUse();
 
   // load the first step SSAO shader
-  ssaoFirstShader.LoadFromFile(GL_VERTEX_SHADER, "shaders/SSAO_FirstStep.vert");
+  ssaoFirstShader.LoadFromFile(GL_VERTEX_SHADER, "SSAO/shaders/SSAO_FirstStep.vert");
   ssaoFirstShader.LoadFromFile(GL_FRAGMENT_SHADER,
-                               "shaders/SSAO_FirstStep.frag");
+                               "SSAO/shaders/SSAO_FirstStep.frag");
   // compile and link shader
   ssaoFirstShader.CreateAndLinkProgram();
   ssaoFirstShader.Use();
@@ -508,9 +509,9 @@ void OnInit() {
   ssaoFirstShader.UnUse();
 
   // load the second step SSAO shader
-  ssaoSecondShader.LoadFromFile(GL_VERTEX_SHADER, "shaders/Passthrough.vert");
+  ssaoSecondShader.LoadFromFile(GL_VERTEX_SHADER, "SSAO/shaders/Passthrough.vert");
   ssaoSecondShader.LoadFromFile(GL_FRAGMENT_SHADER,
-                                "shaders/SSAO_SecondStep.frag");
+                                "SSAO/shaders/SSAO_SecondStep.frag");
   // compile and link shader
   ssaoSecondShader.CreateAndLinkProgram();
   ssaoSecondShader.Use();
@@ -542,13 +543,13 @@ void OnInit() {
                      glm::value_ptr(invP));
 
   glm::vec2 samples[16];
-  float angle = (float)M_PI_4;
+  float angle = glm::quarter_pi<float>();
   for (int i = 0; i < 16; i++) {
     samples[i].x = cos(angle) * (float)(i + 1) / 16.0f;
     samples[i].y = sin(angle) * (float)(i + 1) / 16.0f;
-    angle += (float)M_PI_2;
+    angle += glm::half_pi<float>();
     if (((i + 1) % 4) == 0)
-      angle += (float)M_PI_4;
+      angle += glm::quarter_pi<float>();
   }
   glUniform2fv(ssaoSecondShader("samples"), 16, &(samples[0].x));
   ssaoSecondShader.UnUse();

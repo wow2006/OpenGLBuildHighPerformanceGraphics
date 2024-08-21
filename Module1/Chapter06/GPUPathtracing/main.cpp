@@ -42,7 +42,7 @@ vector<GLuint> textures;        // all textures
 int state = 0, oldX = 0, oldY = 0;
 float rX = 22, rY = 116, dist = -120;
 // OBJ mesh filename to load
-const std::string mesh_filename = "media/blocks.obj";
+const std::string mesh_filename = "GPUPathtracing/media/blocks.obj";
 // flag to enable raytracing
 bool bPathtrace = false;
 // fullscreen quad vao and vbos
@@ -324,8 +324,8 @@ void OnInit() {
   GL_CHECK_ERRORS;
 
   // load flat shader
-  flatShader.LoadFromFile(GL_VERTEX_SHADER, "shaders/flat.vert");
-  flatShader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/flat.frag");
+  flatShader.LoadFromFile(GL_VERTEX_SHADER, "GPUPathtracing/shaders/flat.vert");
+  flatShader.LoadFromFile(GL_FRAGMENT_SHADER, "GPUPathtracing/shaders/flat.frag");
   // compile and link shader
   flatShader.CreateAndLinkProgram();
   flatShader.Use();
@@ -335,8 +335,8 @@ void OnInit() {
   flatShader.UnUse();
 
   // load pathtracing shader
-  pathtraceShader.LoadFromFile(GL_VERTEX_SHADER, "shaders/pathtracer.vert");
-  pathtraceShader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/pathtracer.frag");
+  pathtraceShader.LoadFromFile(GL_VERTEX_SHADER, "GPUPathtracing/shaders/pathtracer.vert");
+  pathtraceShader.LoadFromFile(GL_FRAGMENT_SHADER, "GPUPathtracing/shaders/pathtracer.frag");
   // compile and link shader
   pathtraceShader.CreateAndLinkProgram();
   pathtraceShader.Use();
@@ -367,8 +367,8 @@ void OnInit() {
   GL_CHECK_ERRORS;
 
   // load mesh rendering shader
-  shader.LoadFromFile(GL_VERTEX_SHADER, "shaders/shader.vert");
-  shader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/shader.frag");
+  shader.LoadFromFile(GL_VERTEX_SHADER, "GPUPathtracing/shaders/shader.vert");
+  shader.LoadFromFile(GL_FRAGMENT_SHADER, "GPUPathtracing/shaders/shader.frag");
   // compile and link shader
   shader.CreateAndLinkProgram();
   shader.Use();

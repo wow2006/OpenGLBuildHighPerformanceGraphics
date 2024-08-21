@@ -220,9 +220,9 @@ void OnInit() {
 
   // Load the cube shader
   g_pCommon->mCubeShader.LoadFromFile(GL_VERTEX_SHADER,
-                                      "shaders/cube_shader.vert");
+                                      "FrontToBackPeeling/shaders/cube_shader.vert");
   g_pCommon->mCubeShader.LoadFromFile(GL_FRAGMENT_SHADER,
-                                      "shaders/cube_shader.frag");
+                                      "FrontToBackPeeling/shaders/cube_shader.frag");
 
   // compile and link the shader
   g_pCommon->mCubeShader.CreateAndLinkProgram();
@@ -235,9 +235,9 @@ void OnInit() {
 
   // Load the front to back peeling shader
   g_pCommon->mFrontPeelShader.LoadFromFile(GL_VERTEX_SHADER,
-                                           "shaders/front_peel.vert");
+                                           "FrontToBackPeeling/shaders/front_peel.vert");
   g_pCommon->mFrontPeelShader.LoadFromFile(GL_FRAGMENT_SHADER,
-                                           "shaders/front_peel.frag");
+                                           "FrontToBackPeeling/shaders/front_peel.frag");
   // compile and link the shader
   g_pCommon->mFrontPeelShader.CreateAndLinkProgram();
   g_pCommon->mFrontPeelShader.Use();
@@ -251,9 +251,9 @@ void OnInit() {
   g_pCommon->mFrontPeelShader.UnUse();
 
   // Load the blending shader
-  g_pCommon->mBlendShader.LoadFromFile(GL_VERTEX_SHADER, "shaders/blend.vert");
+  g_pCommon->mBlendShader.LoadFromFile(GL_VERTEX_SHADER, "FrontToBackPeeling/shaders/blend.vert");
   g_pCommon->mBlendShader.LoadFromFile(GL_FRAGMENT_SHADER,
-                                       "shaders/blend.frag");
+                                       "FrontToBackPeeling/shaders/blend.frag");
   // compile and link the shader
   g_pCommon->mBlendShader.CreateAndLinkProgram();
   g_pCommon->mBlendShader.Use();
@@ -265,9 +265,9 @@ void OnInit() {
   g_pCommon->mBlendShader.UnUse();
 
   // Load the final shader
-  g_pCommon->mFinalShader.LoadFromFile(GL_VERTEX_SHADER, "shaders/blend.vert");
+  g_pCommon->mFinalShader.LoadFromFile(GL_VERTEX_SHADER, "FrontToBackPeeling/shaders/blend.vert");
   g_pCommon->mFinalShader.LoadFromFile(GL_FRAGMENT_SHADER,
-                                       "shaders/final.frag");
+                                       "FrontToBackPeeling/shaders/final.frag");
   // compile and link the shader
   g_pCommon->mFinalShader.CreateAndLinkProgram();
   g_pCommon->mFinalShader.Use();

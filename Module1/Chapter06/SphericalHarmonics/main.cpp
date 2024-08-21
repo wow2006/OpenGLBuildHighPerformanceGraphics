@@ -51,7 +51,7 @@ float theta = 0.66f;
 float phi = -1.0f;
 float radius = 70;
 // OBJ mesh filename to load
-const std::string mesh_filename = "media/blocks.obj";
+const std::string mesh_filename = "SphericalHarmonics/media/blocks.obj";
 // objectspace light position
 glm::vec3 lightPosOS = glm::vec3(0, 2, 0);
 } // namespace
@@ -251,8 +251,8 @@ void OnInit() {
   GL_CHECK_ERRORS;
 
   // load the flat shader
-  flatShader.LoadFromFile(GL_VERTEX_SHADER, "shaders/flat.vert");
-  flatShader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/flat.frag");
+  flatShader.LoadFromFile(GL_VERTEX_SHADER, "SphericalHarmonics/shaders/flat.vert");
+  flatShader.LoadFromFile(GL_FRAGMENT_SHADER, "SphericalHarmonics/shaders/flat.frag");
   // compile and link shader
   flatShader.CreateAndLinkProgram();
   flatShader.Use();
@@ -262,8 +262,8 @@ void OnInit() {
   flatShader.UnUse();
 
   // load spherical harmonics shader
-  sh_shader.LoadFromFile(GL_VERTEX_SHADER, "shaders/sh_shader.vert");
-  sh_shader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/sh_shader.frag");
+  sh_shader.LoadFromFile(GL_VERTEX_SHADER, "SphericalHarmonics/shaders/sh_shader.vert");
+  sh_shader.LoadFromFile(GL_FRAGMENT_SHADER, "SphericalHarmonics/shaders/sh_shader.frag");
   // compile and link shader
   sh_shader.CreateAndLinkProgram();
   sh_shader.Use();
@@ -284,8 +284,8 @@ void OnInit() {
   GL_CHECK_ERRORS;
 
   // load mesh rendering shader
-  shader.LoadFromFile(GL_VERTEX_SHADER, "shaders/shader.vert");
-  shader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/sh_shader.frag");
+  shader.LoadFromFile(GL_VERTEX_SHADER, "SphericalHarmonics/shaders/shader.vert");
+  shader.LoadFromFile(GL_FRAGMENT_SHADER, "SphericalHarmonics/shaders/sh_shader.frag");
   shader.CreateAndLinkProgram();
   shader.Use();
   // add attribute and uniform
