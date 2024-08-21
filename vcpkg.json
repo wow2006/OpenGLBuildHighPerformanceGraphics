@@ -3,6 +3,14 @@
     "freeglut",
     "glew",
     "glm",
-    "soil"
+    "soil",
+    {
+      "name": "imgui",
+      "default-features": false,
+      "features": [
+        "opengl3-binding",
+        "glfw-binding"
+      ]
+    }
   ]
 }
