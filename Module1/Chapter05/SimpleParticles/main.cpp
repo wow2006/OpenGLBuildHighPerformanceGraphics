@@ -78,8 +78,8 @@ void OnMouseMove(int x, int y) {
 void OnInit() {
   GL_CHECK_ERRORS;
   // loader shader
-  g_pCommon->shader.LoadFromFile(GL_VERTEX_SHADER, "shaders/shader.vert");
-  g_pCommon->shader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/shader.frag");
+  g_pCommon->shader.LoadFromFile(GL_VERTEX_SHADER, "shaders/SimpleParticles.vert");
+  g_pCommon->shader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/SimpleParticles.frag");
   // compile and link shader
   g_pCommon->shader.CreateAndLinkProgram();
   g_pCommon->shader.Use();

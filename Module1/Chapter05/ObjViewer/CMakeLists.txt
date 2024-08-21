@@ -1,21 +1,18 @@
-set(exec_name ObjViewer)
-
+# ${CMAKE_SOURCE_DIR}/Module1/Chapter05/ObjViewer/CMakeLists.txt
 add_executable(
-  ${exec_name}
+  ObjViewer
   main.cpp
   Obj.cpp
 )
 
 target_link_libraries(
-  ${exec_name}
+  ObjViewer
   PUBLIC
   Common
 )
 
-add_custom_command(
-  TARGET ${exec_name}
-  POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy ${exec_name} ${PROJECT_BINARY_DIR}/bin/Module1/Chapter05/${exec_name}
-  COMMAND ${CMAKE_COMMAND} -E copy_directory    ${CMAKE_CURRENT_LIST_DIR}/shaders
-                                                ${PROJECT_BINARY_DIR}/bin/Module1/Chapter05/shaders
+file(
+  COPY
+  ${CMAKE_CURRENT_LIST_DIR}/shaders
+  DESTINATION "${OUTPUT_DIR}"
 )

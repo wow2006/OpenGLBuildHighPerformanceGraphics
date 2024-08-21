@@ -203,8 +203,8 @@ void OnInit() {
   flatShader.UnUse();
 
   // load mesh rendering shader
-  shader.LoadFromFile(GL_VERTEX_SHADER, "shaders/shader.vert");
-  shader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/shader.frag");
+  shader.LoadFromFile(GL_VERTEX_SHADER, "shaders/3dsViewer.vert");
+  shader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/3dsViewer.frag");
   // compile and link
   shader.CreateAndLinkProgram();
   shader.Use();

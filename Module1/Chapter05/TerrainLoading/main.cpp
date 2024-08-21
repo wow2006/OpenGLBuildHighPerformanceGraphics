@@ -139,10 +139,10 @@ void OnInit() {
   // fill terrain indices
   for (i = 0; i < Common::TERRAIN_DEPTH - 1; i++) {
     for (j = 0; j < Common::TERRAIN_WIDTH - 1; j++) {
-      uint i0 = static_cast<uint>(j + i * Common::TERRAIN_WIDTH);
-      uint i1 = i0 + 1;
-      uint i2 = static_cast<uint>(i0 + Common::TERRAIN_WIDTH);
-      uint i3 = i2 + 1;
+      uint32_t i0 = static_cast<uint32_t>(j + i * Common::TERRAIN_WIDTH);
+      uint32_t i1 = i0 + 1;
+      uint32_t i2 = static_cast<uint32_t>(i0 + Common::TERRAIN_WIDTH);
+      uint32_t i3 = i2 + 1;
       *id++ = i0;
       *id++ = i2;
       *id++ = i1;

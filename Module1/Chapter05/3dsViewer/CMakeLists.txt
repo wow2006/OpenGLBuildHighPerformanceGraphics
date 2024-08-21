@@ -1,21 +1,18 @@
-set(exec_name 3dsViewer)
-
+# ${CMAKE_SOURCE_DIR}/Module1/Chapter05/3dsViewer/CMakeLists.txt
 add_executable(
-  ${exec_name}
+  3dsViewer
   main.cpp
   3ds.cpp
 )
 
 target_link_libraries(
-  ${exec_name}
+  3dsViewer
   PUBLIC
   Common
 )
 
-add_custom_command(TARGET ${exec_name} POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy ${exec_name} ${PROJECT_BINARY_DIR}/bin/Module1/Chapter05/${exec_name}
-  COMMAND ${CMAKE_COMMAND} -E copy_directory    ${CMAKE_CURRENT_LIST_DIR}/shaders
-                                                ${PROJECT_BINARY_DIR}/bin/Module1/Chapter05/shaders
-  COMMAND ${CMAKE_COMMAND} -E copy_directory    ${CMAKE_CURRENT_LIST_DIR}/media
-                                                ${PROJECT_BINARY_DIR}/bin/Module1/Chapter05/media
+file(
+  COPY
+  ${CMAKE_CURRENT_LIST_DIR}/shaders ${CMAKE_CURRENT_LIST_DIR}/media
+  DESTINATION "${OUTPUT_DIR}"
 )

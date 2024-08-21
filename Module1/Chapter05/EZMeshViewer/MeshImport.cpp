@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <string>
+#include <vector>
 
 #ifdef WIN32
 #include <windows.h>
@@ -150,18 +151,18 @@ void GetFileList(std::vector<std::string> &list, std::string dir,
   HANDLE fileHandle;
   int flag = 1;
 
-  string temp = dir;
+  std::string temp = dir;
   temp.append("/");
   temp.append(extension);
 
-  wstring ws;
+  std::wstring ws;
   ws.assign(temp.begin(), temp.end());
   fileHandle = FindFirstFile(ws.c_str(), &findData);
   if (fileHandle == INVALID_HANDLE_VALUE)
     return;
   while (flag) {
-    string name;
-    wstring found(findData.cFileName);
+    std::string name;
+    std::wstring found(findData.cFileName);
     name.assign(found.begin(), found.end());
     if (filenameToIgnore.compare(name) != 0)
       list.push_back(name);
