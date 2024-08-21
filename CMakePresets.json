@@ -1,0 +1,65 @@
+{
+  "version": 5,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 26,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "release",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/../build/Release/",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "debug",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/../build/Debug/",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    },
+    {
+      "name": "ninja",
+      "hidden": true,
+      "generator": "Ninja"
+    },
+    {
+      "name": "vcpkg",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+      }
+    },
+    {
+      "name": "compile_commands",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+      }
+    },
+    {
+      "name": "vc_release",
+      "displayName": "VC++ Release",
+      "inherits": [
+        "vcpkg",
+        "ninja",
+        "release",
+        "compile_commands"
+      ]
+    },
+    {
+      "name": "vc_debug",
+      "displayName": "VC++ Debug",
+      "inherits": [
+        "vcpkg",
+        "ninja",
+        "debug",
+        "compile_commands"
+      ]
+    }
+  ]
+}
