@@ -197,7 +197,7 @@ void OnInit() {
                                      g_pCommon->cam.GetPosition());
 
 	const float yaw   = glm::degrees(std::atan2(look.z, look.x) +
-                                   static_cast<float>(M_PI));
+                                   glm::pi<float>());
 	const float pitch = glm::degrees(std::asin(look.y));
 
 	g_pCommon->rX = yaw;

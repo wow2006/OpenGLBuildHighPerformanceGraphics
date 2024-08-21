@@ -405,7 +405,7 @@ void OnInit() {
 
   // get the camera look direction to determine the yaw and pitch amount
   glm::vec3 look = glm::normalize(g_pCommon->cam.GetPosition());
-  float yaw = glm::degrees(static_cast<float>(atan2f(look.z, look.x) + static_cast<float>(M_PI)));
+  float yaw = glm::degrees(static_cast<float>(atan2f(look.z, look.x) + glm::pi<float>()));
   float pitch = glm::degrees(asinf(look.y));
   g_pCommon->rX = yaw;
   g_pCommon->rY = pitch;

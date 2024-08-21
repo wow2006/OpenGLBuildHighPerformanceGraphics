@@ -181,7 +181,7 @@ void OnInit() {
   // get the camera look direction to obtain the yaw and pitch values for camera
   // rotation
   glm::vec3 look    = glm::normalize(p);
-  const float yaw   = glm::degrees(atan2f(look.z, look.x) + static_cast<float>(M_PI));
+  const float yaw   = glm::degrees(atan2f(look.z, look.x) + glm::pi<float>());
   const float pitch = glm::degrees(asinf(look.y));
   g_pCommon->rX     = yaw;
   g_pCommon->rY     = pitch;

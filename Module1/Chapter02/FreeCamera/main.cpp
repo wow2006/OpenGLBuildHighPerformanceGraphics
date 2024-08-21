@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 // STL
 #include <array>
+#include <glm/ext/scalar_constants.hpp>
 #include <iostream>
 #include <sstream>
 // OpenGL
@@ -191,7 +192,7 @@ void OnInit() {
   glm::vec3 look = glm::normalize(p);
 
   // rotate the camera for proper orientation
-  const auto yaw   = glm::degrees(std::atan2(look.z, look.x) + static_cast<float>(M_PI));
+  const auto yaw   = glm::degrees(std::atan2(look.z, look.x) + glm::pi<float>());
   const auto pitch = glm::degrees(std::asin(look.y));
   g_pCommon->rX = yaw;
   g_pCommon->rY = pitch;
