@@ -28,6 +28,14 @@
       "generator": "Ninja"
     },
     {
+      "name": "clang",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++"
+      }
+    },
+    {
       "name": "vcpkg",
       "hidden": true,
       "cacheVariables": {
@@ -42,13 +50,32 @@
       }
     },
     {
+      "name": "window",
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "linux",
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
       "name": "vc_release",
       "displayName": "VC++ Release",
       "inherits": [
         "vcpkg",
         "ninja",
         "release",
-        "compile_commands"
+        "compile_commands",
+        "window"
       ]
     },
     {
@@ -58,7 +85,31 @@
         "vcpkg",
         "ninja",
         "debug",
-        "compile_commands"
+        "compile_commands",
+        "window"
+      ]
+    },
+    {
+      "name": "gnu_release",
+      "displayName": "GNU Release",
+      "inherits": [
+        "vcpkg",
+        "ninja",
+        "release",
+        "compile_commands",
+        "linux"
+      ]
+    },
+    {
+      "name": "clang_release",
+      "displayName": "CLang Release",
+      "inherits": [
+        "vcpkg",
+        "ninja",
+        "release",
+        "compile_commands",
+        "linux",
+        "clang"
       ]
     }
   ]
