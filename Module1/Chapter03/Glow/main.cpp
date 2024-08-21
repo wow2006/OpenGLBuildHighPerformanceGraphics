@@ -1,5 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <glm/gtc/constants.hpp>
 #include <iostream>
 #include <sstream>
 
@@ -178,7 +179,7 @@ void OnInit() {
 
   // orient the camera
   glm::vec3 look = glm::normalize(p);
-  float yaw = glm::degrees(atan2f(look.z, look.x) + static_cast<float>(M_PI));
+  float yaw = glm::degrees(atan2f(look.z, look.x) + glm::pi<float>());
   float pitch = glm::degrees(asinf(look.y));
   g_pCommon->mRX = yaw;
   g_pCommon->mRY = pitch;
@@ -208,7 +209,7 @@ void OnInit() {
 
   // set particle positions
   for (int i = 0; i < 8; i++) {
-    float theta = static_cast<float>(i / 8.0 * 2 * M_PI);
+    float theta = static_cast<float>(i / 8.0 * glm::two_pi<float>());
     g_pCommon->mParticles[i].x = g_pCommon->mRadius * cosf(theta);
     g_pCommon->mParticles[i].y = 0.0f;
     g_pCommon->mParticles[i].z = g_pCommon->mRadius * sinf(theta);

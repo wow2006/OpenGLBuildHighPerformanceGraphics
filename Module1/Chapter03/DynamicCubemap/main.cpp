@@ -1,5 +1,6 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
+#include <glm/gtc/constants.hpp>
 #include <iostream>
 #include <vector>
 
@@ -65,7 +66,7 @@ struct Common {
 
   // vertice and indices of geometry
   std::vector<Vertex>   m_vVertices;
-  std::vector<GLushort> m_vIndices;
+  std::vector<std::uint16_t> m_vIndices;
 
   // autorotate angle
   float m_fAngle = 0;
@@ -86,13 +87,13 @@ inline void push_indices(int sectors, int r, int s) {
   int curRow  = r * sectors;
   int nextRow = (r + 1) * sectors;
 
-  g_pCommon->m_vIndices.push_back(static_cast<ushort>(curRow + s));
-  g_pCommon->m_vIndices.push_back(static_cast<ushort>(nextRow + s));
-  g_pCommon->m_vIndices.push_back(static_cast<ushort>(nextRow + (s + 1)));
+  g_pCommon->m_vIndices.push_back(static_cast<std::uint16_t>(curRow + s));
+  g_pCommon->m_vIndices.push_back(static_cast<std::uint16_t>(nextRow + s));
+  g_pCommon->m_vIndices.push_back(static_cast<std::uint16_t>(nextRow + (s + 1)));
 
-  g_pCommon->m_vIndices.push_back(static_cast<ushort>(curRow + s));
-  g_pCommon->m_vIndices.push_back(static_cast<ushort>(nextRow + (s + 1)));
-  g_pCommon->m_vIndices.push_back(static_cast<ushort>(curRow + (s + 1)));
+  g_pCommon->m_vIndices.push_back(static_cast<std::uint16_t>(curRow + s));
+  g_pCommon->m_vIndices.push_back(static_cast<std::uint16_t>(nextRow + (s + 1)));
+  g_pCommon->m_vIndices.push_back(static_cast<std::uint16_t>(curRow + (s + 1)));
 }
 
 // generates a sphere primitive with the given radius, slices and stacks
@@ -102,9 +103,9 @@ void createSphere(float radius, unsigned int slices, unsigned int stacks) {
 
   for (size_t r = 0; r < slices; ++r) {
     for (size_t s = 0; s < stacks; ++s) {
-      float const y = static_cast<float>(sin(-M_PI_2 + M_PI * r * static_cast<double>(R)));
-      float const x = static_cast<float>(cos(2 * M_PI * s * static_cast<double>(S)) * sin(M_PI * r * static_cast<double>(R)));
-      float const z = static_cast<float>(sin(2 * M_PI * s * static_cast<double>(S)) * sin(M_PI * r * static_cast<double>(R)));
+      float const y = static_cast<float>(sin(-glm::half_pi<double>() + glm::pi<double>() * r * static_cast<double>(R)));
+      float const x = static_cast<float>(cos(glm::two_pi<double>() * s * static_cast<double>(S)) * sin(glm::pi<double>() * r * static_cast<double>(R)));
+      float const z = static_cast<float>(sin(glm::two_pi<double>() * s * static_cast<double>(S)) * sin(glm::pi<double>() * r * static_cast<double>(R)));
 
       Vertex v;
       v.pos = glm::vec3(x, y, z) * radius;
@@ -193,7 +194,7 @@ void OnInit() {
   GL_CHECK_ERRORS
   // pass sphere indices to element array buffer
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_pCommon->mSphereIndicesVBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, g_pCommon->m_vIndices.size() * sizeof(GLushort),
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, g_pCommon->m_vIndices.size() * sizeof(std::uint16_t),
                &g_pCommon->m_vIndices[0], GL_STATIC_DRAW);
 
   // generate the dynamic cubemap texture and bind to texture unit 1
@@ -311,7 +312,7 @@ void DrawScene(glm::mat4 MView, glm::mat4 Proj) {
   // for each cube
   for (int i = 0; i < 8; i++) {
     // determine the cube's transform
-    float angle = static_cast<float>(i / 8.0 * 2.0 * M_PI);
+    float angle = static_cast<float>(i / 8.0 * glm::two_pi<float>());
     glm::mat4 T = glm::translate(
         glm::mat4(1), glm::vec3(g_pCommon->m_fRadius * cosf(angle),
           0.5, g_pCommon->m_fRadius * sinf(angle)));
