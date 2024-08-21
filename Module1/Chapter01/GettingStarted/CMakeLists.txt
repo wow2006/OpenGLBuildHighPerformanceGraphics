@@ -11,10 +11,3 @@ target_link_libraries(
   GLEW::GLEW
   options::options
 )
-
-add_custom_command(
-  TARGET GettingStarted POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy GettingStarted
-  ${PROJECT_BINARY_DIR}/bin/Module1/Chapter01/GettingStarted
-)
-

@@ -19,9 +19,9 @@ target_include_directories(
   ${GLM_INCLUDE_DIR}
 )
 
-add_custom_command(
-  TARGET SimpleTriangle POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy           SimpleTriangle                    ${PROJECT_BINARY_DIR}/bin/Module1/Chapter01/SimpleTriangle
-  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/shaders ${PROJECT_BINARY_DIR}/bin/Module1/Chapter01/shaders
+file(
+  COPY
+  ${CMAKE_CURRENT_LIST_DIR}/shaders
+  DESTINATION
+  ${PROJECT_BINARY_DIR}/bin/Module1/Chapter01/
 )
-
