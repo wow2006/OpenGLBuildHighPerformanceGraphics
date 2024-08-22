@@ -1,15 +1,38 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "Grid.hpp"
+
 #include <glm/glm.hpp>
 
-CGrid::CGrid(int _width, int _depth) {
-  this->width = _width;
-  this->depth = _depth;
+namespace {
+constexpr auto VertexShader = R"(#version 330 core
 
+layout(location=0) in vec3 vVertex; //object space position
+
+//uniform
+uniform mat4 MVP;	//combined modelview projection
+
+void main()
+{
+	//multiply the combined MVP matrix with the object space position to get the clip space position
+	gl_Position = MVP*vec4(vVertex.xyz,1);
+})";
+
+constexpr auto FragmentShader = R"(#version 330 core
+
+layout(location=0) out vec4 vFragColor;	//fragment output colour
+
+void main()
+{
+	//output constant white colour vec4(1,1,1,1)
+	vFragColor = vec4(1,1,1,1);
+})";
+}
+
+CGrid::CGrid(uint32_t _width, uint32_t _depth) : width{_width}, depth{_depth} {
   // setup shader
-  shader.LoadFromFile(GL_VERTEX_SHADER,   "shaders/GridShader.vert");
-  shader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/GridShader.frag");
+  shader.LoadFromString(GL_VERTEX_SHADER,   VertexShader);
+  shader.LoadFromString(GL_FRAGMENT_SHADER, FragmentShader);
   shader.CreateAndLinkProgram();
   shader.Use();
   shader.AddAttribute("vVertex");

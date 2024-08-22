@@ -1,18 +1,20 @@
 #pragma once
+#include <cstdint>
+
 #include "RenderableObject.hpp"
 
-class CGrid : public RenderableObject {
+class CGrid final : public RenderableObject {
 public:
-  CGrid(int width = 10, int depth = 10);
-  virtual ~CGrid();
+  CGrid(uint32_t width = 10, uint32_t depth = 10);
+  ~CGrid() override;
 
-  int GetTotalVertices();
-  int GetTotalIndices();
-  GLenum GetPrimitiveType();
+  int GetTotalVertices() override;
+  int GetTotalIndices() override;
+  GLenum GetPrimitiveType() override;
 
-  void FillVertexBuffer(GLfloat *pBuffer);
-  void FillIndexBuffer(GLuint *pBuffer);
+  void FillVertexBuffer(GLfloat *pBuffer) override;
+  void FillIndexBuffer(GLuint *pBuffer) override;
 
 private:
-  int width, depth;
+  uint32_t width, depth;
 };
