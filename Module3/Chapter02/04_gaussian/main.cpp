@@ -7,6 +7,7 @@
 #include <vector>
 // OpenGL
 #include <GLFW/glfw3.h>
+#include <glm/gtc/constants.hpp>
 
 constexpr auto g_cWindowsWidth      = 640 * 2;
 constexpr auto g_cWindowsHeight     = 480;
@@ -219,7 +220,7 @@ void gaussianDemo(float sigma) {
       // compute the height z based on a 2-D Gaussian function.
       float z_data = exp(-0.5f * (x_data * x_data) / (sigma * sigma) -
                          0.5f * (y_data * y_data) / (sigma * sigma)) /
-                     (sigma * sigma * 2.0f * M_PI);
+                     (sigma * sigma * glm::two_pi<float>());
       data[data_counter].x = x_data;
       data[data_counter].y = y_data;
       data[data_counter].z = z_data;
