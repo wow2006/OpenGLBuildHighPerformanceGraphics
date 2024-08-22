@@ -65,7 +65,7 @@ int state = 0, oldX = 0, oldY = 0;
 float rX = 42, rY = 180, dist = -80;
 
 // OBJ mesh filename to load
-const std::string mesh_filename = "SSAO/media/blocks.obj";
+const std::string mesh_filename = "SSAOData/media/blocks.obj";
 
 // FBO ids for normal and filtering FBO
 GLuint fboID, filterFBOID;
@@ -420,8 +420,8 @@ void OnInit() {
   GL_CHECK_ERRORS;
 
   // setup flat shader
-  flatShader.LoadFromFile(GL_VERTEX_SHADER, "SSAO/shaders/flat.vert");
-  flatShader.LoadFromFile(GL_FRAGMENT_SHADER, "SSAO/shaders/flat.frag");
+  flatShader.LoadFromFile(GL_VERTEX_SHADER, "SSAOData/shaders/flat.vert");
+  flatShader.LoadFromFile(GL_FRAGMENT_SHADER, "SSAOData/shaders/flat.frag");
   // compile and link shader
   flatShader.CreateAndLinkProgram();
   flatShader.Use();
@@ -431,8 +431,8 @@ void OnInit() {
   flatShader.UnUse();
 
   // load final shader
-  finalShader.LoadFromFile(GL_VERTEX_SHADER, "SSAO/shaders/Passthrough.vert");
-  finalShader.LoadFromFile(GL_FRAGMENT_SHADER, "SSAO/shaders/final.frag");
+  finalShader.LoadFromFile(GL_VERTEX_SHADER, "SSAOData/shaders/Passthrough.vert");
+  finalShader.LoadFromFile(GL_FRAGMENT_SHADER, "SSAOData/shaders/final.frag");
   // compile and link shader
   finalShader.CreateAndLinkProgram();
   finalShader.Use();
@@ -445,8 +445,8 @@ void OnInit() {
   finalShader.UnUse();
 
   // load the point light rendering shader
-  shader.LoadFromFile(GL_VERTEX_SHADER, "SSAO/shaders/shader.vert");
-  shader.LoadFromFile(GL_FRAGMENT_SHADER, "SSAO/shaders/shader.frag");
+  shader.LoadFromFile(GL_VERTEX_SHADER, "SSAOData/shaders/shader.vert");
+  shader.LoadFromFile(GL_FRAGMENT_SHADER, "SSAOData/shaders/shader.frag");
   shader.CreateAndLinkProgram();
   shader.Use();
   // add attribute and uniform
@@ -467,8 +467,8 @@ void OnInit() {
   shader.UnUse();
 
   // load the horizontal Gaussian blurring shader
-  gaussianH_shader.LoadFromFile(GL_VERTEX_SHADER, "SSAO/shaders/Passthrough.vert");
-  gaussianH_shader.LoadFromFile(GL_FRAGMENT_SHADER, "SSAO/shaders/GaussH.frag");
+  gaussianH_shader.LoadFromFile(GL_VERTEX_SHADER, "SSAOData/shaders/Passthrough.vert");
+  gaussianH_shader.LoadFromFile(GL_FRAGMENT_SHADER, "SSAOData/shaders/GaussH.frag");
 
   // compile and link shader
   gaussianH_shader.CreateAndLinkProgram();
@@ -481,8 +481,8 @@ void OnInit() {
   gaussianH_shader.UnUse();
 
   // load the vertical Gaussian blurring shader
-  gaussianV_shader.LoadFromFile(GL_VERTEX_SHADER, "SSAO/shaders/Passthrough.vert");
-  gaussianV_shader.LoadFromFile(GL_FRAGMENT_SHADER, "SSAO/shaders/GaussV.frag");
+  gaussianV_shader.LoadFromFile(GL_VERTEX_SHADER, "SSAOData/shaders/Passthrough.vert");
+  gaussianV_shader.LoadFromFile(GL_FRAGMENT_SHADER, "SSAOData/shaders/GaussV.frag");
 
   // compile and link shader
   gaussianV_shader.CreateAndLinkProgram();
@@ -495,9 +495,9 @@ void OnInit() {
   gaussianV_shader.UnUse();
 
   // load the first step SSAO shader
-  ssaoFirstShader.LoadFromFile(GL_VERTEX_SHADER, "SSAO/shaders/SSAO_FirstStep.vert");
+  ssaoFirstShader.LoadFromFile(GL_VERTEX_SHADER, "SSAOData/shaders/SSAO_FirstStep.vert");
   ssaoFirstShader.LoadFromFile(GL_FRAGMENT_SHADER,
-                               "SSAO/shaders/SSAO_FirstStep.frag");
+                               "SSAOData/shaders/SSAO_FirstStep.frag");
   // compile and link shader
   ssaoFirstShader.CreateAndLinkProgram();
   ssaoFirstShader.Use();
@@ -509,9 +509,9 @@ void OnInit() {
   ssaoFirstShader.UnUse();
 
   // load the second step SSAO shader
-  ssaoSecondShader.LoadFromFile(GL_VERTEX_SHADER, "SSAO/shaders/Passthrough.vert");
+  ssaoSecondShader.LoadFromFile(GL_VERTEX_SHADER, "SSAOData/shaders/Passthrough.vert");
   ssaoSecondShader.LoadFromFile(GL_FRAGMENT_SHADER,
-                                "SSAO/shaders/SSAO_SecondStep.frag");
+                                "SSAOData/shaders/SSAO_SecondStep.frag");
   // compile and link shader
   ssaoSecondShader.CreateAndLinkProgram();
   ssaoSecondShader.Use();

@@ -15,5 +15,5 @@ target_link_libraries(
 file(
   COPY
   ${CMAKE_CURRENT_LIST_DIR}/shaders
-  DESTINATION "${OUTPUT_DIR}/DualDepthPeeling"
+  DESTINATION "${OUTPUT_DIR}/DualDepthPeelingData"
 )

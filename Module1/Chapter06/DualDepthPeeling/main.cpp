@@ -342,8 +342,8 @@ void OnInit() {
   glBindVertexArray(0);
 
   // Load the cube shader
-  cubeShader.LoadFromFile(GL_VERTEX_SHADER, "DualDepthPeeling/shaders/cube_shader.vert");
-  cubeShader.LoadFromFile(GL_FRAGMENT_SHADER, "DualDepthPeeling/shaders/cube_shader.frag");
+  cubeShader.LoadFromFile(GL_VERTEX_SHADER, "DualDepthPeelingData/shaders/cube_shader.vert");
+  cubeShader.LoadFromFile(GL_FRAGMENT_SHADER, "DualDepthPeelingData/shaders/cube_shader.frag");
   // compile and link the shader
   cubeShader.CreateAndLinkProgram();
   cubeShader.Use();
@@ -356,8 +356,8 @@ void OnInit() {
   GL_CHECK_ERRORS;
 
   // Load the initialization shader
-  initShader.LoadFromFile(GL_VERTEX_SHADER, "DualDepthPeeling/shaders/cube_shader.vert");
-  initShader.LoadFromFile(GL_FRAGMENT_SHADER, "DualDepthPeeling/shaders/dual_init.frag");
+  initShader.LoadFromFile(GL_VERTEX_SHADER, "DualDepthPeelingData/shaders/cube_shader.vert");
+  initShader.LoadFromFile(GL_FRAGMENT_SHADER, "DualDepthPeelingData/shaders/dual_init.frag");
   // compile and link the shader
   initShader.CreateAndLinkProgram();
   initShader.Use();
@@ -369,8 +369,8 @@ void OnInit() {
   GL_CHECK_ERRORS;
 
   // Load the dual depth peeling shader
-  dualPeelShader.LoadFromFile(GL_VERTEX_SHADER, "DualDepthPeeling/shaders/dual_peel.vert");
-  dualPeelShader.LoadFromFile(GL_FRAGMENT_SHADER, "DualDepthPeeling/shaders/dual_peel.frag");
+  dualPeelShader.LoadFromFile(GL_VERTEX_SHADER, "DualDepthPeelingData/shaders/dual_peel.vert");
+  dualPeelShader.LoadFromFile(GL_FRAGMENT_SHADER, "DualDepthPeelingData/shaders/dual_peel.frag");
   // compile and link the shader
   dualPeelShader.CreateAndLinkProgram();
   dualPeelShader.Use();
@@ -389,8 +389,8 @@ void OnInit() {
   GL_CHECK_ERRORS;
 
   // Load the blending shader
-  blendShader.LoadFromFile(GL_VERTEX_SHADER, "DualDepthPeeling/shaders/blend.vert");
-  blendShader.LoadFromFile(GL_FRAGMENT_SHADER, "DualDepthPeeling/shaders/blend.frag");
+  blendShader.LoadFromFile(GL_VERTEX_SHADER, "DualDepthPeelingData/shaders/blend.vert");
+  blendShader.LoadFromFile(GL_FRAGMENT_SHADER, "DualDepthPeelingData/shaders/blend.frag");
   // compile and link the shader
   blendShader.CreateAndLinkProgram();
   blendShader.Use();
@@ -404,8 +404,8 @@ void OnInit() {
   GL_CHECK_ERRORS;
 
   // Load the final shader
-  finalShader.LoadFromFile(GL_VERTEX_SHADER, "DualDepthPeeling/shaders/blend.vert");
-  finalShader.LoadFromFile(GL_FRAGMENT_SHADER, "DualDepthPeeling/shaders/final.frag");
+  finalShader.LoadFromFile(GL_VERTEX_SHADER, "DualDepthPeelingData/shaders/blend.vert");
+  finalShader.LoadFromFile(GL_FRAGMENT_SHADER, "DualDepthPeelingData/shaders/final.frag");
   // compile and link the shader
   finalShader.CreateAndLinkProgram();
   finalShader.Use();
