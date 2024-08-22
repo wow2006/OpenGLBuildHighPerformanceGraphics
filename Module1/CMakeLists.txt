@@ -6,6 +6,9 @@ find_package(GLEW   REQUIRED)
 find_package(GLM    REQUIRED)
 find_package(SOIL   REQUIRED)
 
+find_package(Stb REQUIRED)
+find_package(glbinding CONFIG REQUIRED)
+
 add_subdirectory(Common)
 add_subdirectory(Chapter01)
 add_subdirectory(Chapter02)

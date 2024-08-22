@@ -1,76 +1,86 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <iostream>
+#include <cstdio>
+#include <cstdlib>
 
-#include <GL/glew.h>
-#include <GL/freeglut.h>
+#include <fmt/color.h>
+#include <fmt/printf.h>
 
-using namespace std;
+#include <glbinding/gl/gl.h>
+#include <glbinding/glbinding.h>
+#define GLFW_INCLUDE_NONE
 
-// screen size
-const int WIDTH = 1280;
-const int HEIGHT = 960;
+#include <GLFW/glfw3.h>
 
-// OpenGL initialization
-void OnInit() {
-  // set clear color to red
-  glClearColor(1, 0, 0, 0);
-  cout << "Initialization successfull" << endl;
-}
+using namespace gl;
 
-// release all allocated resources
-void OnShutdown() { cout << "Shutdown successfull" << endl; }
+namespace {
+constexpr uint32_t WIDTH = 1280;
+constexpr uint32_t HEIGHT = 960;
+}    // namespace
 
-// handle resize event
-void OnResize(int /*nw*/, int /*nh*/) {}
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
+  glfwSetErrorCallback([](int errorCode, const char* message) {
+    fmt::print(stderr, fg(fmt::color::red), "GLFW ERROR({}): {}\n", errorCode, message);
+  });
 
-// display callback function
-void OnRender() {
-  // clear colour and depth buffers
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  // swap front and back buffers to show the rendered result
-  glutSwapBuffers();
-}
-
-int main(int argc, char **argv) {
-  // freeglut initialization calls
-  glutInit(&argc, argv);
-  glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
-  glutInitContextVersion(3, 3);
-  glutInitContextFlags(GLUT_CORE_PROFILE | GLUT_DEBUG);
-  glutInitContextProfile(GLUT_FORWARD_COMPATIBLE);
-  glutInitWindowSize(WIDTH, HEIGHT);
-  glutCreateWindow("Getting started with OpenGL 3.3");
-
-  // glew initialization
-  glewExperimental = GL_TRUE;
-  GLenum err = glewInit();
-  if (GLEW_OK != err) {
-    cerr << "Error: " << glewGetErrorString(err) << endl;
-  } else {
-    if (GLEW_VERSION_3_3) {
-      cout << "Driver supports OpenGL 3.3\nDetails:" << endl;
-    }
+  // glfw initialization
+  if(GLFW_FALSE == glfwInit()) {
+    return EXIT_FAILURE;
   }
 
-  // print information on screen
-  cout << "\tUsing GLEW " << glewGetString(GLEW_VERSION)              << endl;
-  cout << "\tVendor: "    << glGetString(GL_VENDOR)                   << endl;
-  cout << "\tRenderer: "  << glGetString(GL_RENDERER)                 << endl;
-  cout << "\tVersion: "   << glGetString(GL_VERSION)                  << endl;
-  cout << "\tGLSL: "      << glGetString(GL_SHADING_LANGUAGE_VERSION) << endl;
+  glfwWindowHint(GLFW_RED_BITS, 8);
+  glfwWindowHint(GLFW_GREEN_BITS, 8);
+  glfwWindowHint(GLFW_BLUE_BITS, 8);
+  glfwWindowHint(GLFW_DEPTH_BITS, 16);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 
-  // initialization of OpenGL
-  OnInit();
+  glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
 
-  // callback hooks
-  glutCloseFunc(OnShutdown);
-  glutDisplayFunc(OnRender);
-  glutReshapeFunc(OnResize);
+  auto* window = glfwCreateWindow(WIDTH, HEIGHT, "Getting started with OpenGL 3.3", nullptr, nullptr);
+  if(nullptr == window) {
+    glfwTerminate();
+    return EXIT_FAILURE;
+  }
+  glfwMakeContextCurrent(window);
 
-  // main loop call
-  glutMainLoop();
+  glbinding::initialize(glfwGetProcAddress);
 
-  return 0;
+  {
+    int major = 0;
+    int minor = 0;
+    int rev = 0;
+    glfwGetVersion(&major, &minor, &rev);
+    fmt::print("\tUsing GLEW {}.{}.{}\n", major, minor, rev);
+  }
+  fmt::print("\tVendor: {}\n", reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
+  fmt::print("\tRenderer: {}\n", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
+  fmt::print("\tVersion: {}\n", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+  fmt::print("\tGLSL: {}\n", reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
+
+  glDebugMessageCallbackARB(
+      [](GLenum, GLenum, GLuint, GLenum severity, GLsizei, const char* message, const void*) {
+        if(severity == GL_DEBUG_SEVERITY_HIGH_ARB) {
+          fmt::print(stderr, fg(fmt::color::red), "OpenGL ERROR: {}\n", message);
+        }
+      },
+      nullptr);
+
+  glClearColor(1, 0, 0, 0);
+  fmt::print("Initialization successfull\n");
+
+  while(!glfwWindowShouldClose(window)) {
+    glfwPollEvents();
+
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glfwSwapBuffers(window);
+  }
+
+  fmt::print("Shutdown successfull\n");
+
+  return EXIT_SUCCESS;
 }
