@@ -1,13 +1,8 @@
 # ${CMAKE_SOURCE_DIR}/Module1/CMakeLists.txt
-set(OpenGL_GL_PREFERENCE GLVND)
-find_package(OpenGL REQUIRED)
 find_package(GLUT   REQUIRED)
 find_package(GLEW   REQUIRED)
 find_package(GLM    REQUIRED)
 find_package(SOIL   REQUIRED)
-
-find_package(Stb REQUIRED)
-find_package(glbinding CONFIG REQUIRED)
 
 add_subdirectory(Common)
 add_subdirectory(Chapter01)

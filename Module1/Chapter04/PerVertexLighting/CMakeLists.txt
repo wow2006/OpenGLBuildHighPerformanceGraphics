@@ -1,7 +1,4 @@
 # ${CMAKE_SOURCE_DIR}/Module1/Chapter04/PerVertexLighting/CMakeLists.txt
-find_package(glfw3 CONFIG REQUIRED)
-find_package(imgui CONFIG REQUIRED)
-
 add_executable(
   PerVertexLighting
   main.cpp
