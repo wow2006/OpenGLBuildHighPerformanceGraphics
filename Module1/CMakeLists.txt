@@ -1,8 +1,8 @@
 # ${CMAKE_SOURCE_DIR}/Module1/CMakeLists.txt
-find_package(GLUT   REQUIRED)
-find_package(GLEW   REQUIRED)
-find_package(GLM    REQUIRED)
-find_package(SOIL   REQUIRED)
+find_package(GLUT REQUIRED)
+find_package(GLEW REQUIRED)
+find_package(GLM REQUIRED)
+find_package(SOIL REQUIRED)
 
 add_subdirectory(Common)
 add_subdirectory(Chapter01)

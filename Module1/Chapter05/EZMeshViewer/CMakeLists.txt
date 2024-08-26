@@ -4,11 +4,6 @@ add_executable(
   main.cpp
   Ezm.cpp
   3rdParty/pugi_xml/pugixml.cpp
-  MeshImport.cpp
-)
+  MeshImport.cpp)
 
-target_link_libraries(
-  EZMeshViewer
-  PUBLIC
-  Common
-)
+target_link_libraries(EZMeshViewer PUBLIC Common)
