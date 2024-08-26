@@ -6,6 +6,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}")
 
 add_subdirectory(GettingStarted)
 add_subdirectory(SimpleTriangle)
-add_subdirectory(ImageLoader)
+#add_subdirectory(ImageLoader)
 add_subdirectory(RippleDeformer)
 add_subdirectory(SubdivisionGeometryShader)

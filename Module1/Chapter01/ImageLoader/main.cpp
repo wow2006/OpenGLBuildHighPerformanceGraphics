@@ -1,25 +1,31 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <iostream>
+#include <cstdio>
+#include <cstdlib>
 
-#include <GL/glew.h>
-#include <GL/freeglut.h>
+#include <fmt/color.h>
+#include <fmt/printf.h>
 
+#include <glbinding/gl/gl.h>
+#include <glbinding/glbinding.h>
+#define GLFW_INCLUDE_NONE
+
+#include <GLFW/glfw3.h>
+#include <SOIL/SOIL.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
-#include <SOIL/SOIL.h>
 
 #include "GLSLShader.hpp"
 
 #define GL_CHECK_ERRORS assert(glGetError() == GL_NO_ERROR);
 
-struct Common {
-  // screen size
-  const int WIDTH = 1280;
-  const int HEIGHT = 960;
+namespace {
+constexpr uint32_t WIDTH = 1280;
+constexpr uint32_t HEIGHT = 960;
+}    // namespace
 
+struct Common {
   // shader reference
   GLSLShader shader;
 
@@ -42,14 +48,14 @@ struct Common {
   // texture image filename
   const std::string filename = "media/Lenna.png";
 };
-static Common *g_pCommon = nullptr;
+static Common* g_pCommon = nullptr;
 
 // OpenGL initialization
 void OnInit() {
   GL_CHECK_ERRORS
 
   // load shader
-  g_pCommon->shader.LoadFromFile(GL_VERTEX_SHADER,   "shaders/imageLoader.vert");
+  g_pCommon->shader.LoadFromFile(GL_VERTEX_SHADER, "shaders/imageLoader.vert");
   g_pCommon->shader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/imageLoader.frag");
   // compile and link shader
   g_pCommon->shader.CreateAndLinkProgram();
@@ -71,7 +77,7 @@ void OnInit() {
   g_pCommon->vertices[3] = glm::vec2(0.0, 1.0);
 
   // fill quad indices array
-  GLushort *id = &g_pCommon->indices[0];
+  GLushort* id = &g_pCommon->indices[0];
   *id++ = 0;
   *id++ = 1;
   *id++ = 2;
@@ -97,24 +103,22 @@ void OnInit() {
   GL_CHECK_ERRORS
   // pass quad indices to element array buffer
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_pCommon->vboIndicesID);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(g_pCommon->indices), &g_pCommon->indices[0],
-               GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(g_pCommon->indices), &g_pCommon->indices[0], GL_STATIC_DRAW);
   GL_CHECK_ERRORS
 
   // load the image using SOIL
   int texture_width = 0, texture_height = 0, channels = 0;
-  GLubyte *pData = SOIL_load_image(g_pCommon->filename.c_str(), &texture_width,
-                                   &texture_height, &channels, SOIL_LOAD_AUTO);
-  if (!pData) {
+  GLubyte* pData = SOIL_load_image(g_pCommon->filename.c_str(), &texture_width, &texture_height, &channels, SOIL_LOAD_AUTO);
+  if(!pData) {
     std::cerr << "Cannot load image: " << g_pCommon->filename.c_str() << std::endl;
     exit(EXIT_FAILURE);
   }
   // vertically flip the image on Y axis since it is inverted
   int i, j;
-  for (j = 0; j * 2 < texture_height; ++j) {
+  for(j = 0; j * 2 < texture_height; ++j) {
     int index1 = j * texture_width * channels;
     int index2 = (texture_height - 1 - j) * texture_width * channels;
-    for (i = texture_width * channels; i > 0; --i) {
+    for(i = texture_width * channels; i > 0; --i) {
       GLubyte temp = pData[index1];
       pData[index1] = pData[index2];
       pData[index2] = temp;
@@ -133,8 +137,7 @@ void OnInit() {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
   // allocate texture
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture_width, texture_height, 0,
-               GL_RGB, GL_UNSIGNED_BYTE, pData);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture_width, texture_height, 0, GL_RGB, GL_UNSIGNED_BYTE, pData);
   // free SOIL image data
   SOIL_free_image_data(pData);
 
@@ -180,50 +183,55 @@ void OnRender() {
   glutSwapBuffers();
 }
 
-int main(int argc, char **argv) {
-  Common common;
-  g_pCommon = &common;
-  // freeglut initialization calls
-  glutInit(&argc, argv);
-  glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
-  glutInitContextVersion(3, 3);
-  glutInitContextFlags(GLUT_CORE_PROFILE | GLUT_DEBUG);
-  glutInitWindowSize(g_pCommon->WIDTH, g_pCommon->HEIGHT);
-  glutCreateWindow("Simple image loader - OpenGL 3.3");
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
+  glfwSetErrorCallback([](int errorCode, const char* message) {
+    fmt::print(stderr, fg(fmt::color::red), "GLFW ERROR({}): {}\n", errorCode, message);
+  });
 
-  // glew initialization
-  glewExperimental = GL_TRUE;
-  GLenum err = glewInit();
-  if (GLEW_OK != err) {
-    std::cerr << "Error: " << glewGetErrorString(err) << std::endl;
-  } else {
-    if (GLEW_VERSION_3_3) {
-      std::cout << "Driver supports OpenGL 3.3\nDetails:" << std::endl;
-    }
+  // glfw initialization
+  if(GLFW_FALSE == glfwInit()) {
+    return EXIT_FAILURE;
   }
-  err = glGetError(); // this is to ignore INVALID ENUM error 1282
-  GL_CHECK_ERRORS
 
-  // print information on screen
-  std::cout << "\tUsing GLEW " << glewGetString(GLEW_VERSION) << std::endl;
-  std::cout << "\tVendor: " << glGetString(GL_VENDOR) << std::endl;
-  std::cout << "\tRenderer: " << glGetString(GL_RENDERER) << std::endl;
-  std::cout << "\tVersion: " << glGetString(GL_VERSION) << std::endl;
-  std::cout << "\tGLSL: " << glGetString(GL_SHADING_LANGUAGE_VERSION)
-            << std::endl;
+  glfwWindowHint(GLFW_RED_BITS, 8);
+  glfwWindowHint(GLFW_GREEN_BITS, 8);
+  glfwWindowHint(GLFW_BLUE_BITS, 8);
+  glfwWindowHint(GLFW_DEPTH_BITS, 16);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 
-  GL_CHECK_ERRORS
+  glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
 
-  // initialization of OpenGL
-  OnInit();
+  auto* window = glfwCreateWindow(WIDTH, HEIGHT, "Getting started with OpenGL 3.3", nullptr, nullptr);
+  if(nullptr == window) {
+    glfwTerminate();
+    return EXIT_FAILURE;
+  }
+  glfwMakeContextCurrent(window);
 
-  // callback hooks
-  glutCloseFunc(OnShutdown);
-  glutDisplayFunc(OnRender);
-  glutReshapeFunc(OnResize);
+  glbinding::initialize(glfwGetProcAddress);
 
-  // main loop call
-  glutMainLoop();
+  {
+    int major = 0;
+    int minor = 0;
+    int rev = 0;
+    glfwGetVersion(&major, &minor, &rev);
+    fmt::print("\tUsing GLEW {}.{}.{}\n", major, minor, rev);
+  }
+  fmt::print("\tVendor: {}\n", reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
+  fmt::print("\tRenderer: {}\n", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
+  fmt::print("\tVersion: {}\n", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+  fmt::print("\tGLSL: {}\n", reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
 
-  return 0;
+  glDebugMessageCallbackARB(
+      [](GLenum, GLenum, GLuint, GLenum severity, GLsizei, const char* message, const void*) {
+        if(severity == GL_DEBUG_SEVERITY_HIGH_ARB) {
+          fmt::print(stderr, fg(fmt::color::red), "OpenGL ERROR: {}\n", message);
+        }
+      },
+      nullptr);
+
+  return EXIT_SUCCESS;
 }

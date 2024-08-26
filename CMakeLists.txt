@@ -1,3 +1,4 @@
+# ${CMAKE_SOURCE_DIR}/CMakeLists.txt
 cmake_minimum_required(VERSION 3.26)
 project(HighPerformanceGraphics CXX)
 
@@ -13,4 +14,4 @@ find_package(OpenGL REQUIRED)
 find_package(Stb REQUIRED)
 
 add_subdirectory(Module1)
-add_subdirectory(Module3)
+# add_subdirectory(Module3)
