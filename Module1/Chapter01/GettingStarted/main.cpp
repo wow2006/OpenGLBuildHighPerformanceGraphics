@@ -49,6 +49,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
 
   glbinding::initialize(glfwGetProcAddress);
 
+  fmt::print("Driver supports OpenGL 3.3\nDetails:\n");
   {
     int major = 0;
     int minor = 0;

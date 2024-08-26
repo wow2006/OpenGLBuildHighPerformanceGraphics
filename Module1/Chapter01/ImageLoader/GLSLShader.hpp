@@ -2,12 +2,12 @@
 #include <map>
 #include <string>
 
-#include <GL/glew.h>
+#include <glbinding/gl/gl.h>
+
+using namespace gl;
 
 class GLSLShader {
 public:
-  GLSLShader(void);
-  ~GLSLShader(void);
   void LoadFromString(GLenum whichShader, const std::string &source);
   void LoadFromFile(GLenum whichShader, const std::string &filename);
   void CreateAndLinkProgram();
@@ -23,9 +23,9 @@ public:
 
 private:
   enum ShaderType { VERTEX_SHADER, FRAGMENT_SHADER, GEOMETRY_SHADER };
-  GLuint _program;
-  int _totalShaders;
-  GLuint _shaders[3]; // 0->vertexshader, 1->fragmentshader, 2->geometryshader
+  GLuint _program = 0;
+  int _totalShaders = 0;
+  GLuint _shaders[3] = {}; // 0->vertexshader, 1->fragmentshader, 2->geometryshader
   std::map<std::string, GLuint> _attributeList;
   std::map<std::string, GLuint> _uniformLocationList;
 };

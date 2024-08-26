@@ -2,6 +2,9 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <cstdio>
 #include <cstdlib>
+#include <memory>
+#include <optional>
+#include <tuple>
 
 #include <fmt/color.h>
 #include <fmt/printf.h>
@@ -18,101 +21,27 @@
 
 #include "GLSLShader.hpp"
 
-#define GL_CHECK_ERRORS assert(glGetError() == GL_NO_ERROR);
+using namespace gl;
 
 namespace {
 constexpr uint32_t WIDTH = 1280;
 constexpr uint32_t HEIGHT = 960;
+constexpr std::string_view TITLE = "Getting started with OpenGL 3.3";
 }    // namespace
 
-struct Common {
-  // shader reference
-  GLSLShader shader;
-
-  // vertex array and vertex buffer object IDs
-  GLuint vaoID;
-  GLuint vboVerticesID;
-  GLuint vboIndicesID;
-
-  // texture ID
-  GLuint textureID;
-
-  // quad vertices and indices
-  glm::vec2 vertices[4];
-  GLushort indices[6];
-
-  // projection and modelview matrices
-  glm::mat4 P = glm::mat4(1);
-  glm::mat4 MV = glm::mat4(1);
-
-  // texture image filename
-  const std::string filename = "media/Lenna.png";
-};
-static Common* g_pCommon = nullptr;
-
-// OpenGL initialization
-void OnInit() {
-  GL_CHECK_ERRORS
-
-  // load shader
-  g_pCommon->shader.LoadFromFile(GL_VERTEX_SHADER, "shaders/imageLoader.vert");
-  g_pCommon->shader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/imageLoader.frag");
-  // compile and link shader
-  g_pCommon->shader.CreateAndLinkProgram();
-  g_pCommon->shader.Use();
-  // add attributes and uniforms
-  g_pCommon->shader.AddAttribute("vVertex");
-  g_pCommon->shader.AddUniform("textureMap");
-  // pass values of constant uniforms at initialization
-  glUniform1i(g_pCommon->shader("textureMap"), 0);
-  g_pCommon->shader.UnUse();
-
-  GL_CHECK_ERRORS
-
-  // setup quad geometry
-  // setup quad vertices
-  g_pCommon->vertices[0] = glm::vec2(0.0, 0.0);
-  g_pCommon->vertices[1] = glm::vec2(1.0, 0.0);
-  g_pCommon->vertices[2] = glm::vec2(1.0, 1.0);
-  g_pCommon->vertices[3] = glm::vec2(0.0, 1.0);
-
-  // fill quad indices array
-  GLushort* id = &g_pCommon->indices[0];
-  *id++ = 0;
-  *id++ = 1;
-  *id++ = 2;
-  *id++ = 0;
-  *id++ = 2;
-  *id++ = 3;
-
-  GL_CHECK_ERRORS
-
-  // setup quad vao and vbo stuff
-  glGenVertexArrays(1, &g_pCommon->vaoID);
-  glGenBuffers(1, &g_pCommon->vboVerticesID);
-  glGenBuffers(1, &g_pCommon->vboIndicesID);
-
-  glBindVertexArray(g_pCommon->vaoID);
-  glBindBuffer(GL_ARRAY_BUFFER, g_pCommon->vboVerticesID);
-  // pass quad vertices to buffer object
-  glBufferData(GL_ARRAY_BUFFER, sizeof(g_pCommon->vertices), &g_pCommon->vertices[0], GL_STATIC_DRAW);
-  GL_CHECK_ERRORS
-  // enable vertex attribute array for position
-  glEnableVertexAttribArray(g_pCommon->shader["vVertex"]);
-  glVertexAttribPointer(g_pCommon->shader["vVertex"], 2, GL_FLOAT, GL_FALSE, 0, nullptr);
-  GL_CHECK_ERRORS
-  // pass quad indices to element array buffer
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_pCommon->vboIndicesID);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(g_pCommon->indices), &g_pCommon->indices[0], GL_STATIC_DRAW);
-  GL_CHECK_ERRORS
-
+std::optional<GLuint> createTexture(std::string_view filename) {
   // load the image using SOIL
   int texture_width = 0, texture_height = 0, channels = 0;
-  GLubyte* pData = SOIL_load_image(g_pCommon->filename.c_str(), &texture_width, &texture_height, &channels, SOIL_LOAD_AUTO);
-  if(!pData) {
-    std::cerr << "Cannot load image: " << g_pCommon->filename.c_str() << std::endl;
-    exit(EXIT_FAILURE);
+
+  using TextureHandler = std::unique_ptr<GLubyte, decltype(&SOIL_free_image_data)>;
+  auto texturePtr = TextureHandler(
+      SOIL_load_image(filename.data(), &texture_width, &texture_height, &channels, SOIL_LOAD_AUTO), &SOIL_free_image_data);
+  if(!texturePtr) {
+    fmt::print(stderr, fg(fmt::color::red), "Cannot load image: {}\n", filename);
+    return std::nullopt;
   }
+
+  auto* pData = texturePtr.get();
   // vertically flip the image on Y axis since it is inverted
   int i, j;
   for(j = 0; j * 2 < texture_height; ++j) {
@@ -126,10 +55,12 @@ void OnInit() {
       ++index2;
     }
   }
+
   // setup OpenGL texture and bind to texture unit 0
-  glGenTextures(1, &g_pCommon->textureID);
+  GLuint textureID = 0;
+  glGenTextures(1, &textureID);
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, g_pCommon->textureID);
+  glBindTexture(GL_TEXTURE_2D, textureID);
   // set texture parameters
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -138,49 +69,41 @@ void OnInit() {
 
   // allocate texture
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture_width, texture_height, 0, GL_RGB, GL_UNSIGNED_BYTE, pData);
-  // free SOIL image data
-  SOIL_free_image_data(pData);
-
-  GL_CHECK_ERRORS
-
-  std::cout << "Initialization successfull" << std::endl;
+  return textureID;
 }
 
-// release all allocated resources
-void OnShutdown() {
-  // Destroy shader
-  g_pCommon->shader.DeleteShaderProgram();
+std::tuple<GLuint, GLuint, GLuint> createBuffers(GLSLShader& shader) {
+  GLuint vaoID;
+  GLuint vboVerticesID;
+  GLuint vboIndicesID;
 
-  // Destroy vao and vbo
-  glDeleteBuffers(1, &g_pCommon->vboVerticesID);
-  glDeleteBuffers(1, &g_pCommon->vboIndicesID);
-  glDeleteVertexArrays(1, &g_pCommon->vaoID);
+  // setup quad geometry
+  // setup quad vertices
+  constexpr std::array<glm::vec2, 4> vertices {glm::vec2(0.0, 0.0), glm::vec2(1.0, 0.0), glm::vec2(1.0, 1.0), glm::vec2(0.0, 1.0)};
 
-  // Delete textures
-  glDeleteTextures(1, &g_pCommon->textureID);
-  std::cout << "Shutdown successfull" << std::endl;
-}
+  // fill quad indices array
+  constexpr std::array<GLushort, 6> indices {0, 1, 2, 0, 2, 3};
 
-// resize event handler
-void OnResize(int w, int h) {
-  // set the viewport
-  glViewport(0, 0, static_cast<GLsizei>(w), static_cast<GLsizei>(h));
-}
+  // setup quad vao and vbo stuff
+  glGenVertexArrays(1, &vaoID);
+  glGenBuffers(1, &vboVerticesID);
+  glGenBuffers(1, &vboIndicesID);
 
-// display function
-void OnRender() {
-  // clear the colour and depth buffers
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  // bind shader
-  g_pCommon->shader.Use();
-  // draw the full screen quad
-  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-  // unbind shader
-  g_pCommon->shader.UnUse();
+  glBindVertexArray(vaoID);
+  glBindBuffer(GL_ARRAY_BUFFER, vboVerticesID);
+  // pass quad vertices to buffer object
+  glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec2), vertices.data(), GL_STATIC_DRAW);
 
-  // swap front and back buffers to show the rendered result
-  glutSwapBuffers();
+  // enable vertex attribute array for position
+  glEnableVertexAttribArray(shader["vVertex"]);
+  glVertexAttribPointer(shader["vVertex"], 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+
+  // pass quad indices to element array buffer
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboIndicesID);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLushort), indices.data(), GL_STATIC_DRAW);
+
+  return {vaoID, vboVerticesID, vboIndicesID};
 }
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
@@ -204,7 +127,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
 
   glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
 
-  auto* window = glfwCreateWindow(WIDTH, HEIGHT, "Getting started with OpenGL 3.3", nullptr, nullptr);
+  auto* window = glfwCreateWindow(WIDTH, HEIGHT, TITLE.data(), nullptr, nullptr);
   if(nullptr == window) {
     glfwTerminate();
     return EXIT_FAILURE;
@@ -213,6 +136,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
 
   glbinding::initialize(glfwGetProcAddress);
 
+  fmt::print("Driver supports OpenGL 3.3\nDetails:\n");
   {
     int major = 0;
     int minor = 0;
@@ -227,11 +151,64 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
 
   glDebugMessageCallbackARB(
       [](GLenum, GLenum, GLuint, GLenum severity, GLsizei, const char* message, const void*) {
-        if(severity == GL_DEBUG_SEVERITY_HIGH_ARB) {
+        if(GL_DEBUG_SEVERITY_HIGH_ARB == severity) {
           fmt::print(stderr, fg(fmt::color::red), "OpenGL ERROR: {}\n", message);
         }
       },
       nullptr);
+
+  GLSLShader shader;
+  // load shader
+  shader.LoadFromFile(GL_VERTEX_SHADER, "shaders/imageLoader.vert");
+  shader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/imageLoader.frag");
+  // compile and link shader
+  shader.CreateAndLinkProgram();
+  shader.Use();
+  // add attributes and uniforms
+  shader.AddAttribute("vVertex");
+  shader.AddUniform("textureMap");
+  // pass values of constant uniforms at initialization
+  glUniform1i(shader("textureMap"), 0);
+  shader.UnUse();
+
+  const auto [vaoID, vboVerticesID, vboIndicesID] = createBuffers(shader);
+
+  // texture image filename
+  const auto textureOpt = createTexture("media/Lenna.png");
+  if(!textureOpt) {
+    return EXIT_FAILURE;
+  }
+  const auto textureID = textureOpt.value();
+
+  fmt::print("Initialization successfull\n");
+
+  while(!glfwWindowShouldClose(window)) {
+    glfwPollEvents();
+
+    // clear the colour and depth buffers
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // bind shader
+    shader.Use();
+    // draw the full screen quad
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
+    // unbind shader
+    shader.UnUse();
+
+    glfwSwapBuffers(window);
+  }
+
+  // Destroy shader
+  shader.DeleteShaderProgram();
+
+  // Destroy vao and vbo
+  glDeleteBuffers(1, &vboVerticesID);
+  glDeleteBuffers(1, &vboIndicesID);
+  glDeleteVertexArrays(1, &vaoID);
+
+  // Delete textures
+  glDeleteTextures(1, &textureID);
+  fmt::print("Shutdown successfull\n");
 
   return EXIT_SUCCESS;
 }

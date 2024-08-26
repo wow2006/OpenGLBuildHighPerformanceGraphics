@@ -3,13 +3,15 @@ add_executable(ImageLoader main.cpp GLSLShader.cpp)
 
 target_link_libraries(
   ImageLoader
-  PUBLIC OpenGL::GL
-         GLUT::GLUT
-         GLEW::GLEW
+  PUBLIC fmt::fmt
+         glm::glm
+         OpenGL::GL
+         glfw
+         glbinding::glbinding
          options::options
          ${SOIL_LIBRARIES})
 
-target_include_directories(ImageLoader SYSTEM PUBLIC ${Stb_INCLUDE_DIR} ${GLM_INCLUDE_DIR} ${SOIL_INCLUDE_DIRS})
+target_include_directories(ImageLoader SYSTEM PUBLIC ${Stb_INCLUDE_DIR} ${SOIL_INCLUDE_DIRS})
 
 file(COPY ${CMAKE_CURRENT_LIST_DIR}/shaders ${CMAKE_CURRENT_LIST_DIR}/media
      DESTINATION ${PROJECT_BINARY_DIR}/bin/Module1/Chapter01/)
