@@ -42,16 +42,16 @@ IncludeCategories:
   Priority:        1
   SortPriority:    1
   CaseSensitive:   true
-- Regex:           '^<boost'
+- Regex:           '^<fmt'
   Priority:        2
   SortPriority:    2
-- Regex:           '^<fmt'
+- Regex:           '^<glbinding'
   Priority:        3
   SortPriority:    3
-- Regex:           '^<range'
+- Regex:           '^<GLFW'
   Priority:        4
   SortPriority:    4
-- Regex:           '^<Q[A-z]+'
+- Regex:           '^<glm'
   Priority:        5
   SortPriority:    5
   CaseSensitive:   true
