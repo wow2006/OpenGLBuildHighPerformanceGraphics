@@ -14,10 +14,11 @@
 #define GLFW_INCLUDE_NONE
 
 #include <GLFW/glfw3.h>
-#include <SOIL/SOIL.h>
+
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 #include "GLSLShader.hpp"
 
@@ -33,27 +34,14 @@ std::optional<GLuint> createTexture(std::string_view filename) {
   // load the image using SOIL
   int texture_width = 0, texture_height = 0, channels = 0;
 
-  using TextureHandler = std::unique_ptr<GLubyte, decltype(&SOIL_free_image_data)>;
-  auto texturePtr = TextureHandler(
-      SOIL_load_image(filename.data(), &texture_width, &texture_height, &channels, SOIL_LOAD_AUTO), &SOIL_free_image_data);
+  // vertically flip the image on Y axis since it is inverted
+  stbi_set_flip_vertically_on_load(1);
+
+  using TextureHandler = std::unique_ptr<GLubyte, decltype(&stbi_image_free)>;
+  auto texturePtr = TextureHandler(stbi_load(filename.data(), &texture_width, &texture_height, &channels, 3), stbi_image_free);
   if(!texturePtr) {
     fmt::print(stderr, fg(fmt::color::red), "Cannot load image: {}\n", filename);
     return std::nullopt;
-  }
-
-  auto* pData = texturePtr.get();
-  // vertically flip the image on Y axis since it is inverted
-  int i, j;
-  for(j = 0; j * 2 < texture_height; ++j) {
-    int index1 = j * texture_width * channels;
-    int index2 = (texture_height - 1 - j) * texture_width * channels;
-    for(i = texture_width * channels; i > 0; --i) {
-      GLubyte temp = pData[index1];
-      pData[index1] = pData[index2];
-      pData[index2] = temp;
-      ++index1;
-      ++index2;
-    }
   }
 
   // setup OpenGL texture and bind to texture unit 0
@@ -68,7 +56,7 @@ std::optional<GLuint> createTexture(std::string_view filename) {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
   // allocate texture
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture_width, texture_height, 0, GL_RGB, GL_UNSIGNED_BYTE, pData);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture_width, texture_height, 0, GL_RGB, GL_UNSIGNED_BYTE, texturePtr.get());
   return textureID;
 }
 

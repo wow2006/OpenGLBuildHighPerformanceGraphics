@@ -8,10 +8,9 @@ target_link_libraries(
          OpenGL::GL
          glfw
          glbinding::glbinding
-         options::options
-         ${SOIL_LIBRARIES})
+         options::options)
 
-target_include_directories(ImageLoader SYSTEM PUBLIC ${Stb_INCLUDE_DIR} ${SOIL_INCLUDE_DIRS})
+target_include_directories(ImageLoader SYSTEM PUBLIC ${Stb_INCLUDE_DIR})
 
 file(COPY ${CMAKE_CURRENT_LIST_DIR}/shaders ${CMAKE_CURRENT_LIST_DIR}/media
      DESTINATION ${PROJECT_BINARY_DIR}/bin/Module1/Chapter01/)
