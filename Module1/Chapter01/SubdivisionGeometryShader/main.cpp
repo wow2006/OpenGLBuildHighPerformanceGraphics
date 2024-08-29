@@ -1,18 +1,18 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <iostream>
-#include <algorithm>
-
-#include <GL/glew.h>
-#include <GL/freeglut.h>
+#include <fmt/color.h>
+#include <fmt/format.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <SOIL/SOIL.h>
+#include <GL/glew.h>
+
+#include <GL/freeglut.h>
 
 #include "GLSLShader.hpp"
+
 
 #define GL_CHECK_ERRORS assert(glGetError() == GL_NO_ERROR);
 
@@ -31,29 +31,29 @@ struct Common {
 
   // mesh vertices and indices
   glm::vec3 vertices[4];
-  GLushort  indices[6];
+  GLushort indices[6];
 
   // projection and modelview matrices
-  glm::mat4 P  = glm::mat4(1);
-  //glm::mat4 MV = glm::mat4(1);
+  glm::mat4 P = glm::mat4(1);
+  // glm::mat4 MV = glm::mat4(1);
 
   // camera transformation variables
-  int state = 0,  oldX = 0,   oldY   = 0;
-  float rX  = 25, rY   = -40, dist   = -35;
+  int state = 0, oldX = 0, oldY = 0;
+  float rX = 25, rY = -40, dist = -35;
 
   // number of sub-divisions
   int sub_divisions = 1;
 };
-static Common *g_pCommon = nullptr;
+static Common* g_pCommon = nullptr;
 
 // mouse click handler
 void OnMouseDown(int button, int s, int x, int y) {
-  if (s == GLUT_DOWN) {
+  if(s == GLUT_DOWN) {
     g_pCommon->oldX = x;
     g_pCommon->oldY = y;
   }
 
-  if (button == GLUT_MIDDLE_BUTTON)
+  if(button == GLUT_MIDDLE_BUTTON)
     g_pCommon->state = 0;
   else
     g_pCommon->state = 1;
@@ -61,7 +61,7 @@ void OnMouseDown(int button, int s, int x, int y) {
 
 // mouse move handler
 void OnMouseMove(int x, int y) {
-  if (g_pCommon->state == 0)
+  if(g_pCommon->state == 0)
     g_pCommon->dist *= (1 + (y - g_pCommon->oldY) / 60.0f);
   else {
     g_pCommon->rY += (x - g_pCommon->oldX) / 5.0f;
@@ -75,7 +75,7 @@ void OnMouseMove(int x, int y) {
 
 // key event handler to increase/decrease number of sub-divisions
 void OnKey(unsigned char key, int /*x*/, int /*y*/) {
-  switch (key) {
+  switch(key) {
   case ',':
     g_pCommon->sub_divisions--;
     break;
@@ -93,7 +93,7 @@ void OnKey(unsigned char key, int /*x*/, int /*y*/) {
 void OnInit() {
   GL_CHECK_ERRORS
   // load the shader
-  g_pCommon->shader.LoadFromFile(GL_VERTEX_SHADER,   "shaders/subdivisionGeometryShader.vert");
+  g_pCommon->shader.LoadFromFile(GL_VERTEX_SHADER, "shaders/subdivisionGeometryShader.vert");
   g_pCommon->shader.LoadFromFile(GL_GEOMETRY_SHADER, "shaders/subdivisionGeometryShader.geom");
   g_pCommon->shader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/subdivisionGeometryShader.frag");
   // create and link shader
@@ -113,11 +113,11 @@ void OnInit() {
   // setup quad vertices
   g_pCommon->vertices[0] = glm::vec3(-5, 0, -5);
   g_pCommon->vertices[1] = glm::vec3(-5, 0, 5);
-  g_pCommon->vertices[2] = glm::vec3(5,  0, 5);
-  g_pCommon->vertices[3] = glm::vec3(5,  0, -5);
+  g_pCommon->vertices[2] = glm::vec3(5, 0, 5);
+  g_pCommon->vertices[3] = glm::vec3(5, 0, -5);
 
   // setup quad indices
-  GLushort *id = &g_pCommon->indices[0];
+  GLushort* id = &g_pCommon->indices[0];
   *id++ = 0;
   *id++ = 1;
   *id++ = 2;
@@ -130,8 +130,8 @@ void OnInit() {
 
   // setup quad vao and vbo stuff
   glGenVertexArrays(1, &g_pCommon->vaoID);
-  glGenBuffers(1,      &g_pCommon->vboVerticesID);
-  glGenBuffers(1,      &g_pCommon->vboIndicesID);
+  glGenBuffers(1, &g_pCommon->vboVerticesID);
+  glGenBuffers(1, &g_pCommon->vboIndicesID);
 
   glBindVertexArray(g_pCommon->vaoID);
 
@@ -145,8 +145,7 @@ void OnInit() {
   GL_CHECK_ERRORS
   // pass the quad indices to element array buffer
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_pCommon->vboIndicesID);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(g_pCommon->indices), &g_pCommon->indices[0],
-               GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(g_pCommon->indices), &g_pCommon->indices[0], GL_STATIC_DRAW);
   GL_CHECK_ERRORS
 
   // set the polygon mode to render lines
@@ -154,7 +153,7 @@ void OnInit() {
 
   GL_CHECK_ERRORS
 
-  std::cout << "Initialization successfull" << std::endl;
+  fmt::print("Initialization successfull\n");
 }
 
 // delete all allocated resources
@@ -163,11 +162,11 @@ void OnShutdown() {
   g_pCommon->shader.DeleteShaderProgram();
 
   // Destroy vao and vbo
-  glDeleteBuffers(1,      &g_pCommon->vboVerticesID);
-  glDeleteBuffers(1,      &g_pCommon->vboIndicesID);
+  glDeleteBuffers(1, &g_pCommon->vboVerticesID);
+  glDeleteBuffers(1, &g_pCommon->vboIndicesID);
   glDeleteVertexArrays(1, &g_pCommon->vaoID);
 
-  std::cout << "Shutdown successfull" << std::endl;
+  fmt::print("Shutdown successfull\n");
 }
 
 // resize event handler
@@ -185,7 +184,7 @@ void OnRender() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // set the camera transformation
-  glm::mat4 T  = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, g_pCommon->dist));
+  glm::mat4 T = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, g_pCommon->dist));
   glm::mat4 Rx = glm::rotate(T, g_pCommon->rX, glm::vec3(1.0f, 0.0f, 0.0f));
   glm::mat4 MV = glm::rotate(Rx, g_pCommon->rY, glm::vec3(0.0f, 1.0f, 0.0f));
   MV = glm::translate(MV, glm::vec3(-5, 0, -5));
@@ -219,7 +218,7 @@ void OnRender() {
   glutSwapBuffers();
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   Common common;
   g_pCommon = &common;
   // freeglut initialization calls
@@ -227,31 +226,29 @@ int main(int argc, char **argv) {
   glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
   glutInitContextVersion(3, 3);
   glutInitContextProfile(GLUT_CORE_PROFILE | GLUT_DEBUG);
-//glutInitContextFlags();
+  // glutInitContextFlags();
   glutInitWindowSize(g_pCommon->WIDTH, g_pCommon->HEIGHT);
-  glutCreateWindow(
-      "Simple plane subdivision using geometry shader - OpenGL 3.3");
+  glutCreateWindow("Simple plane subdivision using geometry shader - OpenGL 3.3");
 
   // glew initialization
   glewExperimental = GL_TRUE;
   GLenum err = glewInit();
-  if (GLEW_OK != err) {
-    std::cerr << "Error: " << glewGetErrorString(err) << std::endl;
+  if(GLEW_OK != err) {
+    fmt::print(stderr, fg(fmt::color::red), "Error: {}\n", reinterpret_cast<const char*>(glewGetErrorString(err)));
   } else {
-    if (GLEW_VERSION_3_3) {
-      std::cout << "Driver supports OpenGL 3.3\nDetails:" << std::endl;
+    if(GLEW_VERSION_3_3) {
+      fmt::print("Driver supports OpenGL 3.3\nDetails:\n");
     }
   }
-  err = glGetError(); // this is to ignore INVALID ENUM error 1282
+  err = glGetError();    // this is to ignore INVALID ENUM error 1282
   GL_CHECK_ERRORS
 
   // print information on screen
-  std::cout << "\tUsing GLEW " << glewGetString(GLEW_VERSION) << std::endl;
-  std::cout << "\tVendor: "    << glGetString(GL_VENDOR)      << std::endl;
-  std::cout << "\tRenderer: "  << glGetString(GL_RENDERER)    << std::endl;
-  std::cout << "\tVersion: "   << glGetString(GL_VERSION)     << std::endl;
-  std::cout << "\tGLSL: "      << glGetString(GL_SHADING_LANGUAGE_VERSION)
-            << std::endl;
+  fmt::print("\tUsing GLEW {}\n", reinterpret_cast<const char*>(glewGetString(GLEW_VERSION)));
+  fmt::print("\tVendor:    {}\n", reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
+  fmt::print("\tRenderer:  {}\n", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
+  fmt::print("\tVersion:   {}\n", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+  fmt::print("\tGLSL:      {}\n", reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
 
   GL_CHECK_ERRORS
 
