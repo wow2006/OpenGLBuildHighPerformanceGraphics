@@ -5,8 +5,8 @@ target_link_libraries(
   PUBLIC fmt::fmt
          glm::glm
          OpenGL::GL
-         GLUT::GLUT
-         GLEW::GLEW
+         glfw
+         glbinding::glbinding
          options::options)
 
 file(COPY ${CMAKE_CURRENT_LIST_DIR}/shaders DESTINATION ${PROJECT_BINARY_DIR}/bin/Module1/Chapter01/)

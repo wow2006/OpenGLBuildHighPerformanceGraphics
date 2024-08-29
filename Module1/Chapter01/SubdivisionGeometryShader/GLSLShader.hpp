@@ -2,7 +2,9 @@
 #include <map>
 #include <string>
 
-#include <GL/glew.h>
+#include <glbinding/gl/gl.h>
+
+using namespace gl;
 
 class GLSLShader {
 public:

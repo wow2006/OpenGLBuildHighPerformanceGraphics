@@ -10,6 +10,7 @@
 
 #include <glbinding/gl/gl.h>
 #include <glbinding/glbinding.h>
+#include <glm/trigonometric.hpp>
 #define GLFW_INCLUDE_NONE
 
 #include <GLFW/glfw3.h>
@@ -156,12 +157,13 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
 
   struct UserDefinedData {
     // projection and modelview matrices
-    glm::mat4 P = glm::mat4(1);
+    glm::mat4 P = glm::perspective(45.0F, static_cast<GLfloat>(WIDTH) / HEIGHT, 1.0F, 1000.0F);
+    ;
     glm::mat4 MV = glm::mat4(1);
 
     // camera transformation variables
     int state = 0, oldX = 0, oldY = 0;
-    float rX = 25.0F, rY = 40.0F, dist = -0.05F;
+    float rX = 25.0F, rY = -40.0F, dist = -7.0F;
 
     // current time
     float time = 0;
@@ -198,7 +200,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
   glfwSetCursorPosCallback(window, [](GLFWwindow* window, double x, double y) {
     static auto* user = static_cast<UserDefinedData*>(glfwGetWindowUserPointer(window));
     if(user->leftClicked) {
-      fmt::print("\r{} = ({}, {})", user->dist, user->rX, user->rY);
+      fmt::print("\r(rX, rY) = ({}, {}), ({}, {}), {}", user->rX, user->rY, user->oldX, user->oldY, user->dist);
       if(0 == user->state) {
         user->dist *= (1.0F + static_cast<float>(y - static_cast<double>(user->oldY)) / 60.0F);
       } else {
@@ -249,8 +251,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
 
     // set teh camera viewing transformation
     glm::mat4 T = glm::translate(glm::mat4(1.0F), glm::vec3(0.0F, 0.0F, userDefinedData.dist));
-    glm::mat4 Rx = glm::rotate(T, userDefinedData.rX, glm::vec3(1.0F, 0.0F, 0.0F));
-    userDefinedData.MV = glm::rotate(Rx, userDefinedData.rY, glm::vec3(0.0F, 1.0F, 0.0F));
+    glm::mat4 Rx = glm::rotate(T, glm::radians(userDefinedData.rX), glm::vec3(1.0F, 0.0F, 0.0F));
+    userDefinedData.MV = glm::rotate(Rx, glm::radians(userDefinedData.rY), glm::vec3(0.0F, 1.0F, 0.0F));
     glm::mat4 MVP = userDefinedData.P * userDefinedData.MV;
 
     // bind the shader
