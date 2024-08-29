@@ -10,6 +10,7 @@
 
 #include <glbinding/gl/gl.h>
 #include <glbinding/glbinding.h>
+
 #include <glm/trigonometric.hpp>
 #define GLFW_INCLUDE_NONE
 
@@ -51,7 +52,7 @@ std::tuple<GLuint, GLuint, GLuint> createBuffers(GLSLShader& shader) {
   std::array<glm::vec3, (NUM_X + 1) * (NUM_Z + 1)> vertices;
   // setup plane geometry
   // setup plane vertices
-  int count = 0;
+  size_t count = 0;
   int i = 0, j = 0;
   for(j = 0; j <= NUM_Z; j++) {
     for(i = 0; i <= NUM_X; i++) {
@@ -158,7 +159,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
   struct UserDefinedData {
     // projection and modelview matrices
     glm::mat4 P = glm::perspective(45.0F, static_cast<GLfloat>(WIDTH) / HEIGHT, 1.0F, 1000.0F);
-    ;
+
     glm::mat4 MV = glm::mat4(1);
 
     // camera transformation variables
@@ -172,18 +173,18 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
   UserDefinedData userDefinedData;
 
   glfwSetWindowUserPointer(window, &userDefinedData);
-  glfwSetWindowSizeCallback(window, [](GLFWwindow* window, int width, int height) {
-    static auto* user = static_cast<UserDefinedData*>(glfwGetWindowUserPointer(window));
+  glfwSetWindowSizeCallback(window, [](GLFWwindow* win, int width, int height) {
+    static auto* user = static_cast<UserDefinedData*>(glfwGetWindowUserPointer(win));
     // set the viewport size
     glViewport(0, 0, static_cast<GLsizei>(width), static_cast<GLsizei>(height));
     // setup the projection matrix
-    user->P = glm::perspective(45.0F, static_cast<GLfloat>(width) / height, 1.0F, 1000.0F);
+    user->P = glm::perspective(45.0F, static_cast<GLfloat>(width) / static_cast<GLfloat>(height), 1.0F, 1000.0F);
   });
-  glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int) {
-    static auto* user = static_cast<UserDefinedData*>(glfwGetWindowUserPointer(window));
+  glfwSetMouseButtonCallback(window, [](GLFWwindow* win, int button, int action, int) {
+    static auto* user = static_cast<UserDefinedData*>(glfwGetWindowUserPointer(win));
     if(GLFW_PRESS == action) {
       double x = 0, y = 0;
-      glfwGetCursorPos(window, &x, &y);
+      glfwGetCursorPos(win, &x, &y);
       user->oldX = static_cast<int>(x);
       user->oldY = static_cast<int>(y);
       user->leftClicked = true;
@@ -197,10 +198,9 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
       user->state = 1;
     }
   });
-  glfwSetCursorPosCallback(window, [](GLFWwindow* window, double x, double y) {
-    static auto* user = static_cast<UserDefinedData*>(glfwGetWindowUserPointer(window));
+  glfwSetCursorPosCallback(window, [](GLFWwindow* win, double x, double y) {
+    static auto* user = static_cast<UserDefinedData*>(glfwGetWindowUserPointer(win));
     if(user->leftClicked) {
-      fmt::print("\r(rX, rY) = ({}, {}), ({}, {}), {}", user->rX, user->rY, user->oldX, user->oldY, user->dist);
       if(0 == user->state) {
         user->dist *= (1.0F + static_cast<float>(y - static_cast<double>(user->oldY)) / 60.0F);
       } else {
@@ -258,8 +258,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
     // bind the shader
     shader.Use();
     // set the shader uniforms
-    glUniformMatrix4fv(shader("MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
-    glUniform1f(shader("time"), userDefinedData.time);
+    glUniformMatrix4fv(static_cast<int>(shader("MVP")), 1, GL_FALSE, glm::value_ptr(MVP));
+    glUniform1f(static_cast<int>(shader("time")), userDefinedData.time);
     // draw the mesh triangles
     glDrawElements(GL_TRIANGLES, TOTAL_INDICES, GL_UNSIGNED_SHORT, nullptr);
 

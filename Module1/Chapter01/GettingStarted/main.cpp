@@ -17,6 +17,7 @@ using namespace gl;
 namespace {
 constexpr uint32_t WIDTH = 1280;
 constexpr uint32_t HEIGHT = 960;
+constexpr auto TITLE = "Getting started with OpenGL 3.3";
 }    // namespace
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
@@ -40,7 +41,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
 
   glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
 
-  auto* window = glfwCreateWindow(WIDTH, HEIGHT, "Getting started with OpenGL 3.3", nullptr, nullptr);
+  auto* window = glfwCreateWindow(WIDTH, HEIGHT, TITLE, nullptr, nullptr);
   if(nullptr == window) {
     glfwTerminate();
     return EXIT_FAILURE;
@@ -69,6 +70,11 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
         }
       },
       nullptr);
+
+  glfwSetWindowSizeCallback(window, [](GLFWwindow*, int width, int height) {
+    // set the viewport size
+    glViewport(0, 0, static_cast<GLsizei>(width), static_cast<GLsizei>(height));
+  });
 
   glClearColor(1, 0, 0, 0);
   fmt::print("Initialization successfull\n");

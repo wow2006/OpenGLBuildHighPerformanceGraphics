@@ -1,11 +1,13 @@
-add_executable(SimpleTriangle main.cpp GLSLShader.cpp)
+add_executable(SimpleTriangle main.cpp)
 
 target_link_libraries(
   SimpleTriangle
-  PUBLIC OpenGL::GL
-         GLUT::GLUT
-         GLEW::GLEW
-         options::options)
+  PUBLIC fmt::fmt
+         OpenGL::GL
+         glfw
+         glbinding::glbinding
+         options::options
+         GLSLShader)
 
 target_include_directories(SimpleTriangle PUBLIC ${GLM_INCLUDE_DIR})
 

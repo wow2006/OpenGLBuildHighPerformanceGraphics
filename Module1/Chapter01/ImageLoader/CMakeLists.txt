@@ -1,5 +1,5 @@
 # ${CMAKE_SOURCE_DIR}/Module1/Chapter01/ImageLoader/CMakeLists.txt
-add_executable(ImageLoader main.cpp GLSLShader.cpp)
+add_executable(ImageLoader main.cpp)
 
 target_link_libraries(
   ImageLoader
@@ -8,7 +8,8 @@ target_link_libraries(
          OpenGL::GL
          glfw
          glbinding::glbinding
-         options::options)
+         options::options
+         GLSLShader)
 
 target_include_directories(ImageLoader SYSTEM PUBLIC ${Stb_INCLUDE_DIR})
 

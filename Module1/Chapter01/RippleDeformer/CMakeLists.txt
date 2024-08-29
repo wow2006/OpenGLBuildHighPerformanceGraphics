@@ -1,4 +1,4 @@
-add_executable(RippleDeformer main.cpp GLSLShader.cpp)
+add_executable(RippleDeformer main.cpp)
 
 target_link_libraries(
   RippleDeformer
@@ -7,6 +7,7 @@ target_link_libraries(
          OpenGL::GL
          glfw
          glbinding::glbinding
-         options::options)
+         options::options
+         GLSLShader)
 
 file(COPY ${CMAKE_CURRENT_LIST_DIR}/shaders DESTINATION ${PROJECT_BINARY_DIR}/bin/Module1/Chapter01/)

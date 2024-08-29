@@ -117,7 +117,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
 
   struct UserDefinedData {
     // projection and modelview matrices
-    glm::mat4 P = glm::perspective(45.0F, static_cast<GLfloat>(WIDTH) / HEIGHT, 0.01F, 10000.0F);;
+    glm::mat4 P = glm::perspective(45.0F, static_cast<GLfloat>(WIDTH) / HEIGHT, 0.01F, 10000.0F);
 
     // camera transformation variables
     int state = 0, oldX = 0, oldY = 0;
@@ -131,18 +131,18 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
   UserDefinedData userDefinedData;
 
   glfwSetWindowUserPointer(window, &userDefinedData);
-  glfwSetWindowSizeCallback(window, [](GLFWwindow* window, int width, int height) {
-    static auto* user = static_cast<UserDefinedData*>(glfwGetWindowUserPointer(window));
+  glfwSetWindowSizeCallback(window, [](GLFWwindow* win, int width, int height) {
+    static auto* user = static_cast<UserDefinedData*>(glfwGetWindowUserPointer(win));
     // set the viewport size
     glViewport(0, 0, static_cast<GLsizei>(width), static_cast<GLsizei>(height));
     // setup the projection matrix
-    user->P = glm::perspective(45.0F, static_cast<GLfloat>(width) / height, 0.01F, 10000.0F);
+    user->P = glm::perspective(45.0F, static_cast<GLfloat>(width) / static_cast<GLfloat>(height), 0.01F, 10000.0F);
   });
-  glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int) {
-    static auto* user = static_cast<UserDefinedData*>(glfwGetWindowUserPointer(window));
+  glfwSetMouseButtonCallback(window, [](GLFWwindow* win, int button, int action, int) {
+    static auto* user = static_cast<UserDefinedData*>(glfwGetWindowUserPointer(win));
     if(GLFW_PRESS == action) {
       double x = 0, y = 0;
-      glfwGetCursorPos(window, &x, &y);
+      glfwGetCursorPos(win, &x, &y);
       user->oldX = static_cast<int>(x);
       user->oldY = static_cast<int>(y);
       user->leftClicked = true;
@@ -156,8 +156,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
       user->state = 1;
     }
   });
-  glfwSetCursorPosCallback(window, [](GLFWwindow* window, double x, double y) {
-    static auto* user = static_cast<UserDefinedData*>(glfwGetWindowUserPointer(window));
+  glfwSetCursorPosCallback(window, [](GLFWwindow* win, double x, double y) {
+    static auto* user = static_cast<UserDefinedData*>(glfwGetWindowUserPointer(win));
     if(user->leftClicked) {
       if(0 == user->state) {
         user->dist *= (1.0F + static_cast<float>(y - static_cast<double>(user->oldY)) / 60.0F);
@@ -169,8 +169,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
       user->oldY = static_cast<int>(y);
     }
   });
-  glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int, int action, int) {
-    static auto* user = static_cast<UserDefinedData*>(glfwGetWindowUserPointer(window));
+  glfwSetKeyCallback(window, [](GLFWwindow* win, int key, int, int action, int) {
+    static auto* user = static_cast<UserDefinedData*>(glfwGetWindowUserPointer(win));
     if(GLFW_PRESS == action) {
       if(GLFW_KEY_COMMA == key) {
         user->sub_divisions--;
@@ -205,7 +205,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
   shader.AddUniform("MVP");
   shader.AddUniform("sub_divisions");
   // set values of constant uniforms at initialization
-  glUniform1i(shader("sub_divisions"), userDefinedData.sub_divisions);
+  glUniform1i(static_cast<int>(shader("sub_divisions")), userDefinedData.sub_divisions);
   shader.UnUse();
 
   auto [vaoID, vboVerticesID, vboIndicesID] = createBuffers(shader);
@@ -230,23 +230,23 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
     // bind the shader
     shader.Use();
     // set the shader uniforms
-    glUniform1i(shader("sub_divisions"), userDefinedData.sub_divisions);
-    glUniformMatrix4fv(shader("MVP"), 1, GL_FALSE, glm::value_ptr(userDefinedData.P * MV));
+    glUniform1i(static_cast<int>(shader("sub_divisions")), userDefinedData.sub_divisions);
+    glUniformMatrix4fv(static_cast<int>(shader("MVP")), 1, GL_FALSE, glm::value_ptr(userDefinedData.P * MV));
     // draw the first submesh
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 
     MV = glm::translate(MV, glm::vec3(10, 0, 0));
-    glUniformMatrix4fv(shader("MVP"), 1, GL_FALSE, glm::value_ptr(userDefinedData.P * MV));
+    glUniformMatrix4fv(static_cast<int>(shader("MVP")), 1, GL_FALSE, glm::value_ptr(userDefinedData.P * MV));
     // draw the second submesh
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 
     MV = glm::translate(MV, glm::vec3(0, 0, 10));
-    glUniformMatrix4fv(shader("MVP"), 1, GL_FALSE, glm::value_ptr(userDefinedData.P * MV));
+    glUniformMatrix4fv(static_cast<int>(shader("MVP")), 1, GL_FALSE, glm::value_ptr(userDefinedData.P * MV));
     // draw the third submesh
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 
     MV = glm::translate(MV, glm::vec3(-10, 0, 0));
-    glUniformMatrix4fv(shader("MVP"), 1, GL_FALSE, glm::value_ptr(userDefinedData.P * MV));
+    glUniformMatrix4fv(static_cast<int>(shader("MVP")), 1, GL_FALSE, glm::value_ptr(userDefinedData.P * MV));
     // draw the fourth submesh
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
     // unbind the shader

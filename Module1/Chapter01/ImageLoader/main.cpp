@@ -145,6 +145,11 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
       },
       nullptr);
 
+  glfwSetWindowSizeCallback(window, [](GLFWwindow*, int width, int height) {
+    // set the viewport size
+    glViewport(0, 0, static_cast<GLsizei>(width), static_cast<GLsizei>(height));
+  });
+
   GLSLShader shader;
   // load shader
   shader.LoadFromFile(GL_VERTEX_SHADER, "shaders/imageLoader.vert");
@@ -156,7 +161,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
   shader.AddAttribute("vVertex");
   shader.AddUniform("textureMap");
   // pass values of constant uniforms at initialization
-  glUniform1i(shader("textureMap"), 0);
+  glUniform1i(static_cast<int>(shader("textureMap")), 0);
   shader.UnUse();
 
   const auto [vaoID, vboVerticesID, vboIndicesID] = createBuffers(shader);
